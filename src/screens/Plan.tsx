@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { useFamily } from '../state'
 import { generateMonth, monthStats } from '../lib/planner'
 import { fmtDow, fmtDayNum, fmtMonth, isWeekend, todayISO, type ISODate } from '../lib/dates'
 import { PROTEIN_LABEL } from '../components/Chips'
-import type { Dish } from '../data/types'
+import { IconChevronLeft, IconChevronRight } from '../components/Icons'
+import type { Dish, Slot } from '../data/types'
 
 export function Plan({ openDay }: { openDay: (d: ISODate) => void }) {
   const { dishes, byId, overrides } = useFamily()
@@ -19,7 +20,7 @@ export function Plan({ openDay }: { openDay: (d: ISODate) => void }) {
     setYm({ y: d.getFullYear(), m: d.getMonth() })
   }
 
-  const name = (id: string, date: ISODate, slot: keyof typeof overrides[string]) => {
+  const name = (id: string, date: ISODate, slot: Slot) => {
     const ov = overrides[date]?.[slot]
     const d: Dish | undefined = byId.get(ov ?? id)
     return d ? d.name : '—'
@@ -28,55 +29,70 @@ export function Plan({ openDay }: { openDay: (d: ISODate) => void }) {
   return (
     <>
       <header className="top">
-        <div className="brand">Monthly plan</div>
-        <div className="date-nav">
+        <div>
+          <div className="eyebrow">Monthly plan</div>
+          <h1 className="h1">{fmtMonth(ym.y, ym.m)}</h1>
+        </div>
+        <div className="row">
           <button className="icon-btn" onClick={() => shift(-1)} aria-label="Previous month">
-            ‹
+            <IconChevronLeft />
           </button>
-          <span className="date-label">{fmtMonth(ym.y, ym.m)}</span>
           <button className="icon-btn" onClick={() => shift(1)} aria-label="Next month">
-            ›
+            <IconChevronRight />
           </button>
         </div>
       </header>
 
-      <div className="card stats">
-        <div className="stat-line">
-          {(['chicken', 'fish', 'egg', 'prawn', 'lamb', 'veg'] as const).map((p) => (
-            <span key={p} className={`chip chip-${p}`}>
-              {PROTEIN_LABEL[p]} {stats.proteins[p] ?? 0}
-            </span>
-          ))}
-          <span className="chip chip-cuisine-pasta">Pasta {Math.round(stats.pastaShare * 100)}%</span>
+      <div className="card">
+        <div className="card-title">This month</div>
+        <div className="stat-row">
+          {(['chicken', 'fish', 'egg', 'prawn', 'lamb', 'veg'] as const)
+            .filter((p) => stats.proteins[p])
+            .map((p) => (
+              <span key={p} className={`chip chip-${p}`}>
+                {PROTEIN_LABEL[p]} ×{stats.proteins[p]}
+              </span>
+            ))}
+          <span className="chip chip-pasta">Pasta {Math.round(stats.pastaShare * 100)}%</span>
         </div>
-        <div className="muted small">Same plan on every phone. Swaps you make are marked and stay on this phone.</div>
+        <div className="muted xs" style={{ marginTop: 10 }}>
+          The same plan appears on every phone. Meals you swap are marked and stay on this phone.
+        </div>
       </div>
 
       <ul className="days">
-        {plan.map((day) => {
+        {plan.map((day, i) => {
           const isToday = day.date === today
           const swapped = !!overrides[day.date]
+          const dow = fmtDow(day.date)
+          const showWeek = i === 0 || dow === 'Mon'
           return (
-            <li key={day.date} className={'day' + (isToday ? ' today' : '') + (isWeekend(day.date) ? ' weekend' : '')}>
-              <button className="day-btn" onClick={() => openDay(day.date)}>
-                <div className="day-date">
-                  <div className="day-num">{fmtDayNum(day.date)}</div>
-                  <div className="day-dow">{fmtDow(day.date)}</div>
-                </div>
-                <div className="day-meals">
-                  <div>
-                    <span className="k">B</span> {name(day.meals.breakfast, day.date, 'breakfast')}
+            <Fragment key={day.date}>
+              {showWeek && <li className="week-label">Week of {fmtDayNum(day.date)} {fmtMonth(ym.y, ym.m).split(' ')[0].slice(0, 3)}</li>}
+              <li className={'day' + (isToday ? ' today' : '') + (isWeekend(day.date) ? ' weekend' : '')}>
+                <button className="day-btn" onClick={() => openDay(day.date)}>
+                  <div className="day-badge">
+                    <span className="n">{fmtDayNum(day.date)}</span>
+                    <span className="d">{dow}</span>
                   </div>
-                  <div>
-                    <span className="k">L</span> {name(day.meals.lunch, day.date, 'lunch')}
+                  <div className="day-meals">
+                    <div className="slot-breakfast">
+                      <span className="slot-dot" />
+                      <span>{name(day.meals.breakfast, day.date, 'breakfast')}</span>
+                    </div>
+                    <div className="slot-lunch">
+                      <span className="slot-dot" />
+                      <span>{name(day.meals.lunch, day.date, 'lunch')}</span>
+                    </div>
+                    <div className="slot-dinner">
+                      <span className="slot-dot" />
+                      <span>{name(day.meals.dinner, day.date, 'dinner')}</span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="k">D</span> {name(day.meals.dinner, day.date, 'dinner')}
-                  </div>
-                </div>
-                {swapped && <span className="swapped">✎</span>}
-              </button>
-            </li>
+                  {swapped && <span className="swapped-tag">swapped</span>}
+                </button>
+              </li>
+            </Fragment>
           )
         })}
       </ul>

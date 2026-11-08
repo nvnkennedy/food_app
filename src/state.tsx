@@ -11,6 +11,8 @@ export interface WeightEntry {
   kg: number
 }
 
+export type Theme = 'light' | 'dark' | 'system'
+
 export interface Person {
   profile: Profile
   targets: Targets
@@ -34,6 +36,8 @@ interface FamilyState {
   weights: Record<string, WeightEntry[]>
   logWeight: (profileId: string, date: ISODate, kg: number) => void
   removeWeight: (profileId: string, date: ISODate) => void
+  theme: Theme
+  setTheme: (t: Theme) => void
   mealsOn: (date: ISODate) => Meals
   portionFor: (dish: Dish, slot: Slot, person: Person) => number
 }
@@ -48,6 +52,7 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
   const [childEnabled, setChildEnabled] = useStored<boolean>('child', true)
   const [overrides, setOverrides] = useStored<Overrides>('overrides', {})
   const [weights, setWeights] = useStored<Record<string, WeightEntry[]>>('weights', {})
+  const [theme, setTheme] = useStored<Theme>('theme', 'light')
 
   const people = useMemo<Person[]>(
     () =>
@@ -92,6 +97,8 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
         return { ...prev, [pid]: list }
       }),
     removeWeight: (pid, date) => setWeights((prev) => ({ ...prev, [pid]: (prev[pid] ?? []).filter((w) => w.date !== date) })),
+    theme,
+    setTheme,
     mealsOn: (date) => mealsFor(date, DISHES, overrides),
     portionFor: (dish, slot, person) => portionFactor(dish, person.targets.kcal, slot)
   }

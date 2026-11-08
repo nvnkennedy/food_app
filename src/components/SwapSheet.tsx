@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import type { Dish, Slot } from '../data/types'
 import { Sheet } from './Sheet'
-import { DishChips, PROTEIN_LABEL, CUISINE_LABEL } from './Chips'
+import { PROTEIN_LABEL, CUISINE_LABEL, dishEmoji } from './Chips'
+import { IconSearch } from './Icons'
 import { alternativesFor } from '../lib/planner'
 import { useFamily } from '../state'
 import { SLOT_LABEL } from '../lib/nutrition'
@@ -25,13 +26,21 @@ export function SwapSheet({ slot, current, isOverridden, onPick, onReset, onClos
       onClose={onClose}
       footer={
         isOverridden ? (
-          <button className="btn btn-outline wide" onClick={onReset}>
+          <button className="btn secondary wide" onClick={onReset}>
             Back to the planned meal
           </button>
         ) : undefined
       }
     >
-      <input className="input" placeholder="Search dishes…" value={q} onChange={(e) => setQ(e.target.value)} autoFocus />
+      {current && (
+        <div className="muted small">
+          Currently: <b>{current.name}</b>
+        </div>
+      )}
+      <div className="search">
+        <IconSearch size={18} />
+        <input placeholder="Search dishes…" value={q} onChange={(e) => setQ(e.target.value)} />
+      </div>
       <div className="filter-row">
         {proteins.map((p) => (
           <button key={p} className={'pill' + (protein === p ? ' active' : '')} onClick={() => setProtein(p)}>
@@ -42,16 +51,22 @@ export function SwapSheet({ slot, current, isOverridden, onPick, onReset, onClos
       <ul className="swap-list">
         {list.map((d) => (
           <li key={d.id}>
-            <button className="swap-item" onClick={() => onPick(d)}>
-              <div>
+            <button className={`swap-item slot-${slot}`} onClick={() => onPick(d)}>
+              <span className="meal-ico" aria-hidden>
+                {dishEmoji(d, slot)}
+              </span>
+              <span className="grow">
                 <div className="swap-name">{d.name}</div>
-                <DishChips dish={d} compact />
-              </div>
-              <div className="swap-nutri">
+                <div className="chips">
+                  <span className={`chip chip-${d.protein}`}>{PROTEIN_LABEL[d.protein]}</span>
+                  <span className={`chip${d.cuisine === 'pasta' ? ' chip-pasta' : ''}`}>{CUISINE_LABEL[d.cuisine]}</span>
+                </div>
+              </span>
+              <span className="swap-nutri">
                 <b>{d.kcal}</b> kcal
                 <br />
-                {d.protein_g} g prot
-              </div>
+                {d.protein_g} g protein
+              </span>
             </button>
           </li>
         ))}

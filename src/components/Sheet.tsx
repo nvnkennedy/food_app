@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from 'react'
+import { IconClose } from './Icons'
 
 export function Sheet({ title, onClose, children, footer }: { title: string; onClose: () => void; children: ReactNode; footer?: ReactNode }) {
   useEffect(() => {
@@ -16,9 +17,9 @@ export function Sheet({ title, onClose, children, footer }: { title: string; onC
       <div className="sheet" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
         <div className="sheet-handle" />
         <header className="sheet-head">
-          <h2>{title}</h2>
-          <button className="icon-btn" onClick={onClose} aria-label="Close">
-            ✕
+          <span className="eyebrow">{title}</span>
+          <button className="icon-btn ghost sm" onClick={onClose} aria-label="Close">
+            <IconClose size={18} />
           </button>
         </header>
         <div className="sheet-body">{children}</div>

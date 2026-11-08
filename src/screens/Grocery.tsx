@@ -4,24 +4,22 @@ import { useStored } from '../lib/storage'
 import { groceryFor, fmtQty, type Group } from '../lib/grocery'
 import { addDays, fmtShort, todayISO, weekStart, type ISODate } from '../lib/dates'
 import type { DayPlan } from '../lib/planner'
+import { IconCheck, IconChevronLeft, IconChevronRight } from '../components/Icons'
 
-const GROUP_TITLE: Record<Group, string> = {
-  german: 'German supermarket · Rewe / Lidl / Edeka',
-  indian: 'Indian store',
-  pantry: 'Pantry · check you still have'
-}
+const GROUP_TITLE: Record<Group, string> = { german: 'Supermarket', indian: 'Indian store', pantry: 'Pantry' }
+const GROUP_SUB: Record<Group, string> = { german: 'Rewe · Lidl · Edeka · Aldi', indian: 'Dals, rice, spices, curry leaves', pantry: 'Check you still have these' }
 
 export function Grocery() {
   const { byId, familyFactor, mealsOn } = useFamily()
   const [start, setStart] = useState<ISODate>(weekStart(todayISO()))
   const [checked, setChecked] = useStored<Record<string, boolean>>('grocery-checked', {})
-  const [showPantry, setShowPantry] = useState(false)
+  const [group, setGroup] = useState<Group>('german')
 
   const days: DayPlan[] = useMemo(() => Array.from({ length: 7 }, (_, i) => addDays(start, i)).map((date) => ({ date, meals: mealsOn(date) })), [start, mealsOn])
   const groups = useMemo(() => groceryFor(days, byId, familyFactor), [days, byId, familyFactor])
 
   const thisWeek = weekStart(todayISO())
-  const label = start === thisWeek ? 'This week' : start === addDays(thisWeek, 7) ? 'Next week' : 'Week'
+  const label = start === thisWeek ? 'This week' : start === addDays(thisWeek, 7) ? 'Next week' : start === addDays(thisWeek, -7) ? 'Last week' : 'Week'
   const key = (k: string) => `${start}|${k}`
   const toggle = (k: string) => setChecked((prev) => ({ ...prev, [key(k)]: !prev[key(k)] }))
   const clearWeek = () =>
@@ -31,17 +29,59 @@ export function Grocery() {
       return next
     })
 
-  const renderGroup = (g: Group) => {
-    const lines = groups[g]
-    const done = lines.filter((l) => checked[key(l.key)]).length
-    return (
-      <section key={g} className="card">
-        <div className="row-between">
-          <h4>{GROUP_TITLE[g]}</h4>
-          <span className="muted small">
-            {done}/{lines.length}
-          </span>
+  const shopping = [...groups.german, ...groups.indian]
+  const done = shopping.filter((l) => checked[key(l.key)]).length
+  const lines = groups[group]
+
+  return (
+    <>
+      <header className="top">
+        <div>
+          <div className="eyebrow">
+            {fmtShort(start)} – {fmtShort(addDays(start, 6))}
+          </div>
+          <h1 className="h1">{label}</h1>
         </div>
+        <div className="row">
+          <button className="icon-btn" onClick={() => setStart(addDays(start, -7))} aria-label="Previous week">
+            <IconChevronLeft />
+          </button>
+          <button className="icon-btn" onClick={() => setStart(addDays(start, 7))} aria-label="Next week">
+            <IconChevronRight />
+          </button>
+        </div>
+      </header>
+
+      <div className="card">
+        <div className="row-between">
+          <div>
+            <div className="h3">
+              {done} of {shopping.length} bought
+            </div>
+            <div className="muted xs">For the whole family, 7 days, breakfast to dinner · {familyFactor}× adult servings</div>
+          </div>
+          {done > 0 && (
+            <button className="link" onClick={clearWeek}>
+              Reset
+            </button>
+          )}
+        </div>
+        <div className="progress" style={{ marginTop: 10 }}>
+          <div style={{ width: shopping.length ? Math.round((done / shopping.length) * 100) + '%' : 0 }} />
+        </div>
+      </div>
+
+      <div className="seg">
+        {(['german', 'indian', 'pantry'] as Group[]).map((g) => (
+          <button key={g} className={group === g ? 'active' : ''} onClick={() => setGroup(g)}>
+            {GROUP_TITLE[g]}
+            <span className="count">{groups[g].length}</span>
+          </button>
+        ))}
+      </div>
+
+      <section className="card">
+        <div className="card-title">{GROUP_SUB[group]}</div>
         <ul className="grocery">
           {lines.map((l) => {
             const on = !!checked[key(l.key)]
@@ -49,48 +89,24 @@ export function Grocery() {
               <li key={l.key} className={on ? 'done' : ''}>
                 <label>
                   <input type="checkbox" checked={on} onChange={() => toggle(l.key)} />
-                  <span className="g-name">{l.name}</span>
+                  <span className="check">
+                    <IconCheck />
+                  </span>
+                  <span className="grow">
+                    <div className="g-name">{l.name}</div>
+                    <div className="g-dishes">
+                      {l.dishes.slice(0, 2).join(' · ')}
+                      {l.dishes.length > 2 ? ` +${l.dishes.length - 2} more` : ''}
+                    </div>
+                  </span>
                   <span className="g-qty">{fmtQty(l)}</span>
                 </label>
-                <div className="g-dishes">{l.dishes.slice(0, 3).join(' · ')}{l.dishes.length > 3 ? ` +${l.dishes.length - 3}` : ''}</div>
               </li>
             )
           })}
+          {lines.length === 0 && <li className="muted small">Nothing needed from here this week.</li>}
         </ul>
       </section>
-    )
-  }
-
-  return (
-    <>
-      <header className="top">
-        <div className="brand">Grocery list</div>
-        <div className="date-nav">
-          <button className="icon-btn" onClick={() => setStart(addDays(start, -7))} aria-label="Previous week">
-            ‹
-          </button>
-          <button className="date-label" onClick={() => setStart(thisWeek)}>
-            {label} · {fmtShort(start)} – {fmtShort(addDays(start, 6))}
-          </button>
-          <button className="icon-btn" onClick={() => setStart(addDays(start, 7))} aria-label="Next week">
-            ›
-          </button>
-        </div>
-      </header>
-
-      <div className="muted small pad">
-        Quantities for the whole family ({familyFactor}× adult servings), all 7 days, breakfast to dinner. Tick things off as you shop.{' '}
-        <button className="link-btn" onClick={clearWeek}>
-          Untick all
-        </button>
-      </div>
-
-      {renderGroup('german')}
-      {renderGroup('indian')}
-      <button className="link-btn pad" onClick={() => setShowPantry((v) => !v)}>
-        {showPantry ? 'Hide' : 'Show'} pantry staples ({groups.pantry.length})
-      </button>
-      {showPantry && renderGroup('pantry')}
     </>
   )
 }

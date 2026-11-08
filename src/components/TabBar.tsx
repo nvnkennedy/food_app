@@ -1,21 +1,21 @@
+import { IconCalendar, IconCart, IconHome, IconUser } from './Icons'
+
 export type Tab = 'today' | 'plan' | 'grocery' | 'me'
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
-  { id: 'today', label: 'Today', icon: '🍛' },
-  { id: 'plan', label: 'Plan', icon: '📅' },
-  { id: 'grocery', label: 'Grocery', icon: '🛒' },
-  { id: 'me', label: 'Me', icon: '⚖️' }
+const TABS: { id: Tab; label: string; Icon: typeof IconHome }[] = [
+  { id: 'today', label: 'Today', Icon: IconHome },
+  { id: 'plan', label: 'Plan', Icon: IconCalendar },
+  { id: 'grocery', label: 'Grocery', Icon: IconCart },
+  { id: 'me', label: 'Me', Icon: IconUser }
 ]
 
 export function TabBar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
   return (
     <nav className="tabbar" aria-label="Main">
-      {TABS.map((t) => (
-        <button key={t.id} className={'tab' + (tab === t.id ? ' active' : '')} onClick={() => setTab(t.id)} aria-current={tab === t.id ? 'page' : undefined}>
-          <span className="tab-icon" aria-hidden>
-            {t.icon}
-          </span>
-          <span>{t.label}</span>
+      {TABS.map(({ id, label, Icon }) => (
+        <button key={id} className={'tab' + (tab === id ? ' active' : '')} onClick={() => setTab(id)} aria-current={tab === id ? 'page' : undefined}>
+          <Icon size={22} strokeWidth={tab === id ? 2.4 : 2} />
+          <span>{label}</span>
         </button>
       ))}
     </nav>

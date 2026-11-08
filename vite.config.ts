@@ -16,8 +16,8 @@ export default defineConfig({
         name: 'Virundhu',
         short_name: 'Virundhu',
         description: 'Family meal planner: South Indian, a little pasta, weight-loss friendly.',
-        theme_color: '#c2410c',
-        background_color: '#fff7ed',
+        theme_color: '#f6f5f1',
+        background_color: '#f6f5f1',
         display: 'standalone',
         orientation: 'portrait',
         start_url: './',
@@ -30,7 +30,14 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
-        navigateFallback: 'index.html'
+        navigateFallback: 'index.html',
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: { cacheName: 'google-fonts', expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 }, cacheableResponse: { statuses: [0, 200] } }
+          }
+        ]
       }
     })
   ]

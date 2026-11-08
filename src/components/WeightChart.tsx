@@ -5,7 +5,7 @@ export function WeightChart({ entries, goal }: { entries: WeightEntry[]; goal: n
   if (entries.length === 0) return <div className="muted small">Log your weight once a week to see the trend here.</div>
   const W = 320
   const H = 140
-  const pad = { l: 34, r: 10, t: 10, b: 22 }
+  const pad = { l: 34, r: 10, t: 12, b: 10 }
   const xs = entries.map((e) => fromISO(e.date).getTime())
   const ys = entries.map((e) => e.kg)
   const minX = Math.min(...xs)
@@ -14,7 +14,9 @@ export function WeightChart({ entries, goal }: { entries: WeightEntry[]; goal: n
   const maxY = Math.ceil(Math.max(...ys) + 1)
   const x = (t: number) => pad.l + ((t - minX) / (maxX - minX)) * (W - pad.l - pad.r)
   const y = (v: number) => pad.t + (1 - (v - minY) / (maxY - minY)) * (H - pad.t - pad.b)
-  const path = entries.map((e, i) => `${i ? 'L' : 'M'}${x(fromISO(e.date).getTime()).toFixed(1)},${y(e.kg).toFixed(1)}`).join(' ')
+  const pts = entries.map((e) => [x(fromISO(e.date).getTime()), y(e.kg)] as const)
+  const path = pts.map(([px, py], i) => `${i ? 'L' : 'M'}${px.toFixed(1)},${py.toFixed(1)}`).join(' ')
+  const area = `${path} L${pts[pts.length - 1][0].toFixed(1)},${(H - pad.b).toFixed(1)} L${pts[0][0].toFixed(1)},${(H - pad.b).toFixed(1)} Z`
   const ticks = [minY, Math.round((minY + maxY) / 2), maxY]
   const first = entries[0]
   const last = entries[entries.length - 1]
@@ -35,12 +37,13 @@ export function WeightChart({ entries, goal }: { entries: WeightEntry[]; goal: n
         <text x={W - pad.r} y={y(goal) - 4} className="tick goal-text" textAnchor="end">
           goal {goal} kg
         </text>
+        {pts.length > 1 && <path d={area} className="area" />}
         <path d={path} className="line" />
-        {entries.map((e) => (
-          <circle key={e.date} cx={x(fromISO(e.date).getTime())} cy={y(e.kg)} r={3.5} className="dot" />
+        {pts.map(([px, py], i) => (
+          <circle key={entries[i].date} cx={px} cy={py} r={4} className="dot" />
         ))}
       </svg>
-      <div className="small">
+      <div className="small muted" style={{ marginTop: 4 }}>
         {entries.length > 1 ? (
           <>
             <b className={delta <= 0 ? 'good' : 'bad'}>
@@ -50,7 +53,9 @@ export function WeightChart({ entries, goal }: { entries: WeightEntry[]; goal: n
             since {first.date} · latest {last.kg} kg
           </>
         ) : (
-          <>Latest {last.kg} kg on {last.date}</>
+          <>
+            Latest {last.kg} kg on {last.date}
+          </>
         )}
       </div>
     </div>
