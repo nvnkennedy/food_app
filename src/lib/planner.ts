@@ -41,7 +41,7 @@ export function generateMonth(year: number, month0: number, dishes: Dish[]): Day
   const hit = cache.get(key)
   if (hit) return hit
 
-  const rng = rngFor(`ghar-ka-khana-${PLAN_VERSION}-${monthKey(year, month0)}`)
+  const rng = rngFor(`virundhu-${PLAN_VERSION}-${monthKey(year, month0)}`)
   const n = daysInMonth(year, month0)
   const dates: ISODate[] = Array.from({ length: n }, (_, i) => toISO(new Date(year, month0, i + 1)))
 

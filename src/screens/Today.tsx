@@ -41,7 +41,7 @@ export function Today({ date, setDate }: { date: ISODate; setDate: (d: ISODate) 
   return (
     <>
       <header className="top">
-        <div className="brand">Ghar Ka Khana</div>
+        <div className="brand">Virundhu</div>
         <div className="date-nav">
           <button className="icon-btn" onClick={() => setDate(addDays(date, -1))} aria-label="Previous day">
             ‹

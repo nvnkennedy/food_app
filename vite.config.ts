@@ -13,8 +13,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'],
       manifest: {
-        name: 'Ghar Ka Khana',
-        short_name: 'Ghar Khana',
+        name: 'Virundhu',
+        short_name: 'Virundhu',
         description: 'Family meal planner: South Indian, a little pasta, weight-loss friendly.',
         theme_color: '#c2410c',
         background_color: '#fff7ed',

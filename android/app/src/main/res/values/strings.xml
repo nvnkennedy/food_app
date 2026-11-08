@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Ghar Ka Khana</string>
-    <string name="title_activity_main">Ghar Ka Khana</string>
-    <string name="package_name">de.gharkakhana.app</string>
-    <string name="custom_url_scheme">de.gharkakhana.app</string>
+    <string name="app_name">Virundhu</string>
+    <string name="title_activity_main">Virundhu</string>
+    <string name="package_name">de.virundhu.app</string>
+    <string name="custom_url_scheme">de.virundhu.app</string>
 </resources>

@@ -1,4 +1,4 @@
-# Ghar Ka Khana
+# Virundhu
 
 Family meal planner for an Indian family in Berlin: about 70% Indian food (mostly South Indian),
 30% pasta, weight-loss friendly portions, a 6-year-old who eats the same food.

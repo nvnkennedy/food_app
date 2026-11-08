@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
-  appId: 'de.gharkakhana.app',
-  appName: 'Ghar Ka Khana',
+  appId: 'de.virundhu.app',
+  appName: 'Virundhu',
   webDir: 'dist',
   android: {
     allowMixedContent: false

@@ -1,4 +1,4 @@
-package de.gharkakhana.app;
+package de.virundhu.app;
 
 import com.getcapacitor.BridgeActivity;
 

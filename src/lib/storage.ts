@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
-const PREFIX = 'gkk:'
+const PREFIX = 'virundhu:'
 
 export function loadJSON<T>(key: string, fallback: T): T {
   try {
