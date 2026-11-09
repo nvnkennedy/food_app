@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { useFamily, type Theme } from '../state'
 import { ACTIVITY_LABEL, bmiOf, bmiBand, defaultProfile, type Activity, type Profile, type Sex } from '../lib/nutrition'
 import { WeightChart } from '../components/WeightChart'
-import { IconPlus, IconTrash } from '../components/Icons'
+import { IconPlus, IconShare, IconTrash } from '../components/Icons'
 import { todayISO } from '../lib/dates'
 import { CURRENCY, type Region } from '../data/prices'
 
 export function Me() {
-  const { profiles, setProfiles, people, weights, logWeight, removeWeight, clearOverrides, overrides, settings, setSettings } = useFamily()
+  const { profiles, setProfiles, people, weights, logWeight, removeWeight, clearOverrides, overrides, settings, setSettings, setupLink, prefs, setPref, byId } = useFamily()
+  const [copied, setCopied] = useState(false)
+  const dislikedIds = Object.keys(prefs).filter((k) => prefs[k] === 'dislike')
   const adults = profiles.filter((p) => p.kind === 'adult').length
   const kids = profiles.filter((p) => p.kind === 'child').length
 
@@ -192,6 +194,64 @@ export function Me() {
       </div>
 
       <section className="card">
+        <div className="card-title">Food preferences</div>
+        <div className="setting">
+          <div className="grow">
+            <div className="t">Occasional dishes on weekends</div>
+            <div className="s">Off: only familiar everyday Tamil home food is planned. On: North Indian plates, soups and salads can appear on weekends. Keep it the same on both phones so the plan matches.</div>
+          </div>
+          <label className="switch">
+            <input type="checkbox" checked={settings.adventurous} onChange={(e) => setSettings({ adventurous: e.target.checked })} />
+            <span />
+          </label>
+        </div>
+        {dislikedIds.length > 0 && (
+          <div className="setting" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 6 }}>
+            <div className="t">Not for us ({dislikedIds.length})</div>
+            <div className="chips">
+              {dislikedIds.map((id) => (
+                <button key={id} className="chip" onClick={() => setPref(id, null)} title="Allow again">
+                  {byId.get(id)?.name.split(' (')[0] ?? id} ✕
+                </button>
+              ))}
+            </div>
+            <div className="s">Tap to allow a dish again. Mark dishes from any recipe page.</div>
+          </div>
+        )}
+      </section>
+
+      <section className="card">
+        <div className="card-title">Share setup with the other phone</div>
+        <div className="s" style={{ marginBottom: 10 }}>
+          Sends names, ages, targets, country and budget. Open the link on the other phone once; its weight log and swaps stay separate.
+        </div>
+        <button
+          className="btn sm secondary"
+          onClick={async () => {
+            const url = setupLink()
+            try {
+              if (navigator.share) await navigator.share({ title: 'Virundhu family setup', url })
+              else {
+                await navigator.clipboard.writeText(url)
+                setCopied(true)
+                setTimeout(() => setCopied(false), 2500)
+              }
+            } catch {
+              try {
+                await navigator.clipboard.writeText(url)
+                setCopied(true)
+                setTimeout(() => setCopied(false), 2500)
+              } catch {
+                /* ignore */
+              }
+            }
+          }}
+        >
+          <IconShare size={16} /> {copied ? 'Link copied' : 'Share setup link'}
+        </button>
+      </section>
+
+      <section className="card">
         <div className="card-title">Shopping &amp; budget</div>
         <div className="setting" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 8 }}>
           <div className="t">Country</div>
@@ -246,7 +306,8 @@ export function Me() {
       <section className="card">
         <div className="card-title">How the plan works</div>
         <ul className="bullets">
-          <li>Weekdays are South Indian home food. North Indian plates and light soups or salads appear only on weekends, as extras.</li>
+          <li>Only familiar everyday dishes are planned: idli, dosa, upma, pongal, sambar, rasam, kootu, poriyal, kuzhambu, curd rice, chicken and fish curries, egg curry. Less familiar dishes are marked "Occasional" and appear only if you pick them, or on weekends if you switch that on.</li>
+          <li>Weekdays are South Indian home food. North Indian plates and light soups or salads can appear only on weekends, as extras.</li>
           <li>One feast a month, on the second Sunday: biryani or a celebration plate, and lamb in every second month. The rest of the month stays light.</li>
           <li>Each week: chicken 3×, fish 2×, egg 3×, the rest dal and vegetables. Prawns every second week.</li>
           <li>Breakfast is tiffin: idli, dosa, poha, upma, ragi, oats, with eggs about twice a week. Snacks are South Indian and kid friendly.</li>

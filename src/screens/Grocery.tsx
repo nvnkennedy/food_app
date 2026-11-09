@@ -4,7 +4,7 @@ import { useStored } from '../lib/storage'
 import { groceryFor, fmtQty, type Group, type GroceryLine } from '../lib/grocery'
 import { addDays, fmtShort, todayISO, weekStart, type ISODate } from '../lib/dates'
 import type { DayPlan } from '../lib/planner'
-import { IconCheck, IconChevronLeft, IconChevronRight } from '../components/Icons'
+import { IconCheck, IconChevronLeft, IconChevronRight, IconShare } from '../components/Icons'
 import { germanName } from '../data/germanNames'
 import { costOf, fmtMoney } from '../data/prices'
 
@@ -50,6 +50,39 @@ export function Grocery() {
   const current = groupsOrder.includes(group) ? group : groupsOrder[0]
   const lines = groups[current]
   const expensive = [...shopping].sort((a, b) => lineCost(b) - lineCost(a)).slice(0, 3)
+  const [shared, setShared] = useState<'' | 'copied' | 'shared'>('')
+
+  const shareList = async () => {
+    const lines: string[] = [`Virundhu grocery · ${fmtShort(start)} – ${fmtShort(addDays(start, 6))}`]
+    for (const g of groupsOrder) {
+      if (!groups[g].length) continue
+      lines.push('', GROUP_TITLE[g].toUpperCase())
+      for (const l of groups[g]) {
+        if (checked[key(l.key)]) continue
+        const de = region === 'DE' ? germanName(l.name) : undefined
+        lines.push(`☐ ${l.name} – ${fmtQty(l)}${de ? ` (${de.split(/[(;,]/)[0].trim()})` : ''}`)
+      }
+    }
+    lines.push('', `Estimated ${fmtMoney(region, total)}${budget ? ` of ${fmtMoney(region, budget)}` : ''}`)
+    const text = lines.join('\n')
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'Grocery list', text })
+        setShared('shared')
+      } else {
+        await navigator.clipboard.writeText(text)
+        setShared('copied')
+      }
+    } catch {
+      try {
+        await navigator.clipboard.writeText(text)
+        setShared('copied')
+      } catch {
+        /* ignore */
+      }
+    }
+    setTimeout(() => setShared(''), 2500)
+  }
 
   return (
     <>
@@ -61,6 +94,9 @@ export function Grocery() {
           <h1 className="h1">{label}</h1>
         </div>
         <div className="row">
+          <button className="icon-btn" onClick={shareList} aria-label="Share list" title="Share or copy the list">
+            <IconShare />
+          </button>
           <button className="icon-btn" onClick={() => setStart(addDays(start, -7))} aria-label="Previous week">
             <IconChevronLeft />
           </button>
@@ -70,6 +106,7 @@ export function Grocery() {
         </div>
       </header>
 
+      {shared && <div className="banner">{shared === 'copied' ? 'List copied. Paste it into WhatsApp or Notes.' : 'List shared.'}</div>}
       <div className="card col" style={{ gap: 10 }}>
         <div className="row-between">
           <div>

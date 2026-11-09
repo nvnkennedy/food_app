@@ -1892,3 +1892,199 @@ select.input {
 .swap-nutri .faint {
   font-size: 11px;
 }
+
+/* ---------- nutrient table & strip ---------- */
+.ntable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.ntable th,
+.ntable td {
+  padding: 6px 4px;
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid var(--line);
+}
+
+.ntable thead th {
+  border-top: 0;
+  padding-bottom: 4px;
+}
+
+.ntable thead th:first-child,
+.ntable tbody th {
+  width: 86px;
+}
+
+.ntable tbody th {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ntable tbody th small {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--text-3);
+}
+
+.ntable thead th .avatar {
+  display: inline-grid;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.nname {
+  font-size: 12.5px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.nval {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.nval .faint {
+  font-size: 11px;
+}
+
+.ntable .mini {
+  margin-top: 4px;
+}
+
+.npct {
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.npct.ok,
+.mini > div.ok {
+  color: var(--green);
+}
+.npct.mid {
+  color: #b45309;
+}
+.npct.low,
+.npct.over {
+  color: var(--red);
+}
+.mini > div.over {
+  background: var(--tomato);
+}
+.mini > div.ok {
+  background: var(--green);
+}
+
+.nstrip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+}
+
+.ncell {
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 7px 2px 6px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.ncell b {
+  font-size: 13.5px;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.ncell b small {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-left: 1px;
+}
+
+.ncell span {
+  font-size: 10px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ncell em {
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-3);
+}
+
+.ncell em.ok {
+  color: var(--green);
+}
+
+.ncell em.low {
+  color: var(--red);
+}
+
+.nstrip.compact .ncell {
+  padding: 5px 2px 4px;
+  border-radius: 8px;
+}
+
+.nstrip.compact .ncell b {
+  font-size: 12.5px;
+}
+
+.meal-local {
+  font-size: 13px;
+  color: var(--text-2);
+  margin-top: -3px;
+  font-weight: 500;
+}
+
+.meal.eaten {
+  opacity: 0.78;
+}
+
+.meal.eaten .meal-name {
+  text-decoration: line-through;
+  text-decoration-color: var(--text-3);
+}
+
+.pill-btn.done {
+  background: var(--accent-soft);
+  color: var(--accent-soft-ink);
+}
+
+.like-tag {
+  color: var(--tomato);
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.prep {
+  background: linear-gradient(135deg, var(--surface), var(--surface-2));
+}
+
+.btn.danger-btn {
+  background: var(--tomato);
+  color: #fff;
+}
+
+.chips button.chip {
+  cursor: pointer;
+}
+
+.tabbar .tab {
+  font-size: 10.5px;
+}

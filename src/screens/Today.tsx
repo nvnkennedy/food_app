@@ -5,10 +5,11 @@ import { MealCard } from '../components/MealCard'
 import { RecipeSheet } from '../components/RecipeSheet'
 import { SwapSheet } from '../components/SwapSheet'
 import { NutrientPanel } from '../components/NutrientPanel'
-import { IconChevronLeft, IconChevronRight, IconToday } from '../components/Icons'
+import { IconChevronLeft, IconChevronRight, IconMoon, IconToday } from '../components/Icons'
 import { SLOT_ORDER } from '../lib/nutrition'
 import { addDays, fmtDow, fmtDayNum, fromISO, isWeekend, todayISO, weekStart, type ISODate } from '../lib/dates'
 import { isFeastDay, isLambMonth } from '../lib/planner'
+import { prepFor } from '../lib/prep'
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const DOWS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -20,14 +21,15 @@ function heading(date: ISODate, today: ISODate): string {
   return DOWS[fromISO(date).getDay()]
 }
 
-export function Today({ date, setDate }: { date: ISODate; setDate: (d: ISODate) => void }) {
-  const { byId, overrides, setOverride, mealsOn } = useFamily()
+export function Today({ date, setDate, goToFamily }: { date: ISODate; setDate: (d: ISODate) => void; goToFamily: () => void }) {
+  const { byId, overrides, setOverride, dayOn, eaten, setEaten, settings, people } = useFamily()
   const [open, setOpen] = useState<Slot | null>(null)
   const [swap, setSwap] = useState<Slot | null>(null)
 
-  const meals = mealsOn(date)
+  const { meals, replaced } = dayOn(date)
   const today = todayISO()
   const dayOv = overrides[date] ?? {}
+  const dayEaten = eaten[date] ?? {}
   const d = fromISO(date)
   const ws = weekStart(date)
   const week = Array.from({ length: 7 }, (_, i) => addDays(ws, i))
@@ -36,6 +38,9 @@ export function Today({ date, setDate }: { date: ISODate; setDate: (d: ISODate) 
   const swapDish: Dish | undefined = swap ? byId.get(meals[swap]) : undefined
   const feast = isFeastDay(date)
   const weekend = isWeekend(date)
+
+  const tomorrow = dayOn(addDays(date, 1)).meals
+  const prep = prepFor(SLOT_ORDER.map((s) => byId.get(tomorrow[s])).filter((x): x is Dish => !!x))
 
   return (
     <>
@@ -71,7 +76,22 @@ export function Today({ date, setDate }: { date: ISODate; setDate: (d: ISODate) 
         ))}
       </div>
 
-      <NutrientPanel meals={meals} />
+      {people.length === 0 ? (
+        <div className="card cta">
+          <span className="emoji" aria-hidden>
+            👨‍👩‍👦
+          </span>
+          <div className="grow">
+            <div className="h3">Add your family</div>
+            <div className="muted small">Names, ages and goals give each person their own plate sizes and nutrient targets.</div>
+          </div>
+          <button className="btn sm" onClick={goToFamily}>
+            Add
+          </button>
+        </div>
+      ) : (
+        <NutrientPanel date={date} meals={meals} />
+      )}
 
       {feast && (
         <div className="banner feast-banner">
@@ -81,18 +101,48 @@ export function Today({ date, setDate }: { date: ISODate; setDate: (d: ISODate) 
           </span>
         </div>
       )}
-      {weekend && !feast && (
+      {weekend && !feast && settings.adventurous && (
         <div className="faint xs" style={{ padding: '0 4px' }}>
           Weekend: North Indian plates and light soups or salads may appear as extras. Weekdays stay South Indian.
         </div>
       )}
 
       {SLOT_ORDER.map((slot) => (
-        <MealCard key={slot} slot={slot} dish={byId.get(meals[slot])} swapped={!!dayOv[slot]} onOpen={() => setOpen(slot)} onSwap={() => setSwap(slot)} />
+        <MealCard
+          key={slot}
+          slot={slot}
+          dish={byId.get(meals[slot])}
+          swapped={!!dayOv[slot]}
+          replaced={replaced.includes(slot)}
+          eaten={!!dayEaten[slot]}
+          onToggleEaten={date <= today ? () => setEaten(date, slot, !dayEaten[slot]) : undefined}
+          onOpen={() => setOpen(slot)}
+          onSwap={() => setSwap(slot)}
+        />
       ))}
 
+      {prep.length > 0 && (
+        <section className="card prep">
+          <div className="row" style={{ gap: 8 }}>
+            <IconMoon size={18} />
+            <div className="card-title" style={{ marginBottom: 0 }}>
+              Tonight, for tomorrow
+            </div>
+          </div>
+          <ul className="bullets" style={{ marginTop: 8 }}>
+            {prep.slice(0, 5).map((p, i) => (
+              <li key={i}>
+                <span>
+                  {p.text} <span className="faint">· {p.dish}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <div className="faint xs" style={{ textAlign: 'center', padding: '0 12px' }}>
-        Tap a meal for the recipe, nutrients, cost and how to absorb more. No tea or coffee within an hour of iron-rich meals.
+        Tap a meal for the recipe, nutrients, cost and how to absorb more. Tick "Ate it" to track the day. No tea or coffee within an hour of iron-rich meals.
       </div>
 
       {open && openDish && (

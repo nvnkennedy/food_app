@@ -7,12 +7,12 @@ import { IconChevronLeft, IconChevronRight } from '../components/Icons'
 import type { Dish, Slot } from '../data/types'
 
 export function Plan({ openDay }: { openDay: (d: ISODate) => void }) {
-  const { dishes, byId, overrides } = useFamily()
+  const { dishes, byId, overrides, planOptions } = useFamily()
   const now = new Date()
   const [ym, setYm] = useState({ y: now.getFullYear(), m: now.getMonth() })
   const today = todayISO()
 
-  const plan = useMemo(() => generateMonth(ym.y, ym.m, dishes), [ym, dishes])
+  const plan = useMemo(() => generateMonth(ym.y, ym.m, dishes, planOptions), [ym, dishes, planOptions])
   const stats = useMemo(() => monthStats(plan, byId), [plan, byId])
   const feast = feastDayOf(ym.y, ym.m)
 

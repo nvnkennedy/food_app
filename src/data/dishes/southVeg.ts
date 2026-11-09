@@ -33,7 +33,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 25,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['steamed', 'batch-cook', 'quick', 'leftover-friendly'],
+    tags: ['steamed', 'batch-cook', 'quick', 'leftover-friendly', 'everyday'],
     ingredients: [
       { name: 'dosa batter', qty: 180, unit: 'ml', note: 'store-bought or home fermented' },
       { name: 'toor dal', qty: 30, unit: 'g' },
@@ -84,7 +84,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['steamed', 'quick', 'one-pot'],
+    tags: ['steamed', 'quick', 'one-pot', 'everyday'],
     ingredients: [
       { name: 'rava', qty: 60, unit: 'g', note: 'fine semolina / sooji' },
       { name: 'curd', qty: 60, unit: 'g', note: 'Aldi: Naturjoghurt 3.5% Milsani' },
@@ -138,7 +138,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['steamed', 'high-fiber', 'quick'],
+    tags: ['steamed', 'high-fiber', 'quick', 'everyday'],
     ingredients: [
       { name: 'rolled oats', qty: 50, unit: 'g' },
       { name: 'rava', qty: 20, unit: 'g' },
@@ -191,7 +191,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['steamed', 'high-fiber', 'batch-cook', 'leftover-friendly'],
+    tags: ['steamed', 'high-fiber', 'batch-cook', 'leftover-friendly', 'everyday'],
     ingredients: [
       { name: 'dosa batter', qty: 120, unit: 'ml' },
       { name: 'ragi flour', qty: 40, unit: 'g' },
@@ -243,7 +243,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'batch-cook', 'leftover-friendly'],
+    tags: ['quick', 'batch-cook', 'leftover-friendly', 'everyday'],
     ingredients: [
       { name: 'dosa batter', qty: 180, unit: 'ml' },
       { name: 'oil', qty: 1.5, unit: 'tsp' },
@@ -297,7 +297,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 40,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['weekend', 'comfort', 'leftover-friendly'],
+    tags: ['weekend', 'comfort', 'leftover-friendly', 'everyday'],
     ingredients: [
       { name: 'dosa batter', qty: 160, unit: 'ml' },
       { name: 'potato', qty: 1, unit: 'pc', note: 'medium, boiled' },
@@ -352,7 +352,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'high-fiber', 'quick', 'high-iron'],
+    tags: ['high-protein', 'high-fiber', 'quick', 'high-iron', 'everyday'],
     ingredients: [
       { name: 'whole moong', qty: 70, unit: 'g', note: 'soaked 6 hours or overnight' },
       { name: 'ginger', qty: 1, unit: 'tsp' },
@@ -402,7 +402,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 40,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['high-protein', 'high-fiber', 'weekend', 'batch-cook', 'high-iron'],
+    tags: ['high-protein', 'high-fiber', 'weekend', 'batch-cook', 'high-iron', 'everyday'],
     ingredients: [
       { name: 'idly rice', qty: 30, unit: 'g', note: 'soaked 3 hours' },
       { name: 'toor dal', qty: 20, unit: 'g', note: 'soaked 3 hours' },
@@ -458,7 +458,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 25,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'high-fiber'],
+    tags: ['quick', 'high-fiber', 'everyday'],
     ingredients: [
       { name: 'ragi flour', qty: 50, unit: 'g' },
       { name: 'rice flour', qty: 15, unit: 'g' },
@@ -508,7 +508,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 25,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'high-fiber'],
+    tags: ['quick', 'high-fiber', 'everyday'],
     ingredients: [
       { name: 'rolled oats', qty: 50, unit: 'g' },
       { name: 'rava', qty: 15, unit: 'g' },
@@ -559,7 +559,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 25,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'high-fiber'],
+    tags: ['quick', 'high-fiber', 'everyday'],
     ingredients: [
       { name: 'atta', qty: 60, unit: 'g' },
       { name: 'rice flour', qty: 10, unit: 'g' },
@@ -609,7 +609,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'leftover-friendly', 'high-fiber'],
+    tags: ['quick', 'leftover-friendly', 'high-fiber', 'everyday'],
     ingredients: [
       { name: 'dosa batter', qty: 180, unit: 'ml' },
       { name: 'onion', qty: 0.5, unit: 'pc' },
@@ -662,7 +662,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 25,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['one-pot', 'quick', 'comfort'],
+    tags: ['one-pot', 'quick', 'comfort', 'everyday'],
     ingredients: [
       { name: 'rava', qty: 50, unit: 'g' },
       { name: 'onion', qty: 0.5, unit: 'pc' },
@@ -715,7 +715,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 20,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['one-pot', 'quick'],
+    tags: ['one-pot', 'quick', 'everyday'],
     ingredients: [
       { name: 'vermicelli', qty: 50, unit: 'g', note: 'roasted semiya' },
       { name: 'onion', qty: 0.5, unit: 'pc' },
@@ -765,7 +765,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 20,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['one-pot', 'quick', 'high-fiber'],
+    tags: ['one-pot', 'quick', 'high-fiber', 'everyday'],
     ingredients: [
       { name: 'rolled oats', qty: 55, unit: 'g' },
       { name: 'onion', qty: 0.5, unit: 'pc' },
@@ -817,7 +817,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['one-pot', 'high-fiber', 'leftover-friendly'],
+    tags: ['one-pot', 'high-fiber', 'leftover-friendly', 'everyday'],
     ingredients: [
       { name: 'broken wheat', qty: 60, unit: 'g', note: 'godhumai rava / dalia; coarse bulgur works too' },
       { name: 'onion', qty: 0.5, unit: 'pc' },
@@ -869,7 +869,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 35,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['one-pot', 'comfort', 'high-protein', 'weekend'],
+    tags: ['one-pot', 'comfort', 'high-protein', 'weekend', 'everyday'],
     ingredients: [
       { name: 'sona masoori rice', qty: 45, unit: 'g', note: 'or half brown rice' },
       { name: 'moong dal', qty: 35, unit: 'g' },
@@ -925,7 +925,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 40,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['steamed', 'high-protein', 'high-fiber', 'weekend', 'high-iron'],
+    tags: ['steamed', 'high-protein', 'high-fiber', 'weekend', 'high-iron', 'everyday'],
     ingredients: [
       { name: 'puttu flour', qty: 60, unit: 'g', note: 'or ragi puttu flour' },
       { name: 'frozen grated coconut', qty: 20, unit: 'g' },
@@ -978,7 +978,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 35,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['weekend', 'comfort'],
+    tags: ['weekend', 'comfort', 'everyday'],
     ingredients: [
       { name: 'appam flour', qty: 70, unit: 'g', note: 'instant appam mix, or fermented appam batter' },
       { name: 'coconut milk', qty: 100, unit: 'ml', note: 'light / diluted' },
@@ -1031,7 +1031,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 40,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['steamed', 'weekend', 'comfort'],
+    tags: ['steamed', 'weekend', 'comfort', 'everyday'],
     ingredients: [
       { name: 'rice flour', qty: 65, unit: 'g', note: 'idiyappam flour; or ready sevai' },
       { name: 'oil', qty: 1.5, unit: 'tsp' },
@@ -1094,7 +1094,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 45,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['high-fiber', 'leftover-friendly', 'batch-cook', 'comfort', 'high-iron', 'high-protein'],
+    tags: ['high-fiber', 'leftover-friendly', 'batch-cook', 'comfort', 'high-iron', 'high-protein', 'everyday'],
     ingredients: [
       { name: 'brown rice', qty: 65, unit: 'g', note: 'dry; or sona masoori' },
       { name: 'toor dal', qty: 40, unit: 'g' },
@@ -1151,7 +1151,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 40,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['comfort', 'quick', 'leftover-friendly', 'high-fiber'],
+    tags: ['comfort', 'quick', 'leftover-friendly', 'high-fiber', 'everyday'],
     ingredients: [
       { name: 'sona masoori rice', qty: 60, unit: 'g', note: 'dry; or red rice' },
       { name: 'toor dal', qty: 30, unit: 'g' },
@@ -1208,7 +1208,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'comfort', 'leftover-friendly'],
+    tags: ['quick', 'comfort', 'leftover-friendly', 'everyday'],
     ingredients: [
       { name: 'sona masoori rice', qty: 50, unit: 'g', note: 'dry, cooked soft' },
       { name: 'curd', qty: 150, unit: 'g', note: 'Aldi: Naturjoghurt 3.5% Milsani' },
@@ -1264,7 +1264,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'leftover-friendly', 'high-fiber'],
+    tags: ['quick', 'leftover-friendly', 'high-fiber', 'everyday'],
     ingredients: [
       { name: 'brown rice', qty: 60, unit: 'g', note: 'dry; leftover cooked rice is ideal' },
       { name: 'lemon', qty: 0.5, unit: 'pc' },
@@ -1320,7 +1320,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 35,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['one-pot', 'leftover-friendly', 'comfort'],
+    tags: ['one-pot', 'leftover-friendly', 'comfort', 'everyday'],
     ingredients: [
       { name: 'brown rice', qty: 60, unit: 'g', note: 'dry; or basmati' },
       { name: 'tomato', qty: 2, unit: 'pc' },
@@ -1377,7 +1377,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 45,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['high-fiber', 'leftover-friendly', 'comfort'],
+    tags: ['high-fiber', 'leftover-friendly', 'comfort', 'everyday'],
     ingredients: [
       { name: 'atta', qty: 70, unit: 'g', note: 'for 2 small chapatis' },
       { name: 'onion', qty: 0.5, unit: 'pc' },
@@ -1439,7 +1439,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 40,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'one-pot', 'comfort', 'leftover-friendly', 'high-iron', 'high-fiber'],
+    tags: ['high-protein', 'one-pot', 'comfort', 'leftover-friendly', 'high-iron', 'high-fiber', 'everyday'],
     ingredients: [
       { name: 'brown rice', qty: 60, unit: 'g', note: 'dry' },
       { name: 'bottle gourd', qty: 150, unit: 'g', note: 'or zucchini / chayote' },
@@ -1498,7 +1498,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 35,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-fiber', 'high-protein', 'quick', 'high-iron'],
+    tags: ['high-fiber', 'high-protein', 'quick', 'high-iron', 'everyday'],
     ingredients: [
       { name: 'red rice', qty: 60, unit: 'g', note: 'dry; or sona masoori' },
       { name: 'spinach', qty: 150, unit: 'g', note: 'fresh, or 120 g frozen spinach' },
@@ -1555,7 +1555,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 45,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['high-fiber', 'comfort', 'weekend'],
+    tags: ['high-fiber', 'comfort', 'weekend', 'everyday'],
     ingredients: [
       { name: 'red rice', qty: 60, unit: 'g', note: 'dry; Kerala matta or brown rice' },
       { name: 'carrot', qty: 0.5, unit: 'pc' },
@@ -1614,7 +1614,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 40,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['leftover-friendly', 'batch-cook', 'comfort', 'high-fiber'],
+    tags: ['leftover-friendly', 'batch-cook', 'comfort', 'high-fiber', 'everyday'],
     ingredients: [
       { name: 'sona masoori rice', qty: 60, unit: 'g', note: 'dry; or brown rice' },
       { name: 'tamarind', qty: 2, unit: 'tsp' },
@@ -1674,7 +1674,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 35,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'comfort', 'high-fiber'],
+    tags: ['quick', 'comfort', 'high-fiber', 'everyday'],
     ingredients: [
       { name: 'brown rice', qty: 60, unit: 'g', note: 'dry' },
       { name: 'curd', qty: 180, unit: 'g', note: 'slightly sour; Aldi: Naturjoghurt 3.5% Milsani' },
@@ -1730,7 +1730,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 55,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['weekend', 'one-pot', 'comfort', 'leftover-friendly', 'high-fiber', 'feast'],
+    tags: ['weekend', 'one-pot', 'comfort', 'leftover-friendly', 'high-fiber', 'feast', 'everyday'],
     ingredients: [
       { name: 'brown rice', qty: 65, unit: 'g', note: 'dry; or brown basmati' },
       { name: 'onion', qty: 0.75, unit: 'pc' },
@@ -1793,7 +1793,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 45,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['one-pot', 'high-protein', 'high-fiber', 'leftover-friendly', 'comfort'],
+    tags: ['one-pot', 'high-protein', 'high-fiber', 'leftover-friendly', 'comfort', 'everyday'],
     ingredients: [
       { name: 'brown rice', qty: 50, unit: 'g', note: 'dry; or sona masoori' },
       { name: 'toor dal', qty: 40, unit: 'g' },
@@ -1853,7 +1853,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 40,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'high-fiber', 'batch-cook', 'leftover-friendly', 'high-iron'],
+    tags: ['high-protein', 'high-fiber', 'batch-cook', 'leftover-friendly', 'high-iron', 'everyday'],
     ingredients: [
       { name: 'brown rice', qty: 60, unit: 'g', note: 'dry' },
       { name: 'toor dal', qty: 45, unit: 'g' },
@@ -1913,7 +1913,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 50,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['high-protein', 'high-fiber', 'steamed', 'weekend'],
+    tags: ['high-protein', 'high-fiber', 'steamed', 'weekend', 'everyday'],
     ingredients: [
       { name: 'sona masoori rice', qty: 60, unit: 'g', note: 'dry; or brown rice' },
       { name: 'toor dal', qty: 35, unit: 'g', note: 'soaked 1 hour' },
@@ -1972,7 +1972,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 45,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['high-protein', 'high-fiber', 'batch-cook', 'leftover-friendly', 'high-iron'],
+    tags: ['high-protein', 'high-fiber', 'batch-cook', 'leftover-friendly', 'high-iron', 'everyday'],
     ingredients: [
       { name: 'atta', qty: 70, unit: 'g', note: 'for 2 small chapatis' },
       { name: 'black chana', qty: 60, unit: 'g', note: 'soaked overnight; or canned chickpeas' },
@@ -2031,7 +2031,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 40,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-fiber', 'high-protein', 'leftover-friendly', 'one-pot', 'high-iron'],
+    tags: ['high-fiber', 'high-protein', 'leftover-friendly', 'one-pot', 'high-iron', 'everyday'],
     ingredients: [
       { name: 'millet', qty: 60, unit: 'g', note: 'varagu (kodo) or thinai (foxtail), rinsed' },
       { name: 'toor dal', qty: 40, unit: 'g' },
@@ -2089,7 +2089,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 10,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'high-fiber', 'quick', 'batch-cook'],
+    tags: ['high-protein', 'high-fiber', 'quick', 'batch-cook', 'everyday'],
     ingredients: [
       { name: 'chickpeas', qty: 100, unit: 'g', note: 'cooked or canned, drained' },
       { name: 'frozen grated coconut', qty: 10, unit: 'g' },
@@ -2135,7 +2135,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 25,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'low-carb', 'batch-cook'],
+    tags: ['high-protein', 'low-carb', 'batch-cook', 'everyday'],
     ingredients: [
       { name: 'peanuts', qty: 30, unit: 'g', note: 'raw, soaked 2 hours' },
       { name: 'frozen grated coconut', qty: 8, unit: 'g' },
@@ -2182,7 +2182,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 5,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'quick'],
+    tags: ['high-protein', 'quick', 'everyday'],
     ingredients: [
       { name: 'roasted chana dal', qty: 30, unit: 'g', note: 'pottukadalai, or roasted whole chana' },
       { name: 'curd', qty: 100, unit: 'g', note: 'Aldi: Naturjoghurt 3.5% Milsani' },
@@ -2223,7 +2223,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 5,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'low-carb'],
+    tags: ['quick', 'low-carb', 'everyday'],
     ingredients: [
       { name: 'curd', qty: 120, unit: 'g', note: 'Aldi: Naturjoghurt 3.5% Milsani' },
       { name: 'water', qty: 200, unit: 'ml' },
@@ -2268,7 +2268,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 5,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'low-carb'],
+    tags: ['quick', 'low-carb', 'everyday'],
     ingredients: [
       { name: 'curd', qty: 130, unit: 'g', note: 'Aldi: Naturjoghurt 3.5% Milsani' },
       { name: 'water', qty: 180, unit: 'ml' },
@@ -2311,7 +2311,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 10,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'high-fiber', 'quick', 'low-carb'],
+    tags: ['high-protein', 'high-fiber', 'quick', 'low-carb', 'everyday'],
     ingredients: [
       { name: 'sprouts', qty: 100, unit: 'g', note: 'moong sprouts, home-grown from whole moong or bought' },
       { name: 'cucumber', qty: 0.25, unit: 'pc' },
@@ -2357,7 +2357,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 10,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'low-carb'],
+    tags: ['quick', 'low-carb', 'everyday'],
     ingredients: [
       { name: 'cucumber', qty: 0.5, unit: 'pc' },
       { name: 'carrot', qty: 1, unit: 'pc' },
@@ -2401,7 +2401,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 15,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'high-fiber', 'comfort'],
+    tags: ['quick', 'high-fiber', 'comfort', 'everyday'],
     ingredients: [
       { name: 'ragi flour', qty: 30, unit: 'g' },
       { name: 'water', qty: 200, unit: 'ml' },
@@ -2445,7 +2445,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 5,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'high-fiber'],
+    tags: ['quick', 'high-fiber', 'everyday'],
     ingredients: [
       { name: 'apple', qty: 0.5, unit: 'pc' },
       { name: 'banana', qty: 0.5, unit: 'pc' },
@@ -2486,7 +2486,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 10,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'high-fiber'],
+    tags: ['quick', 'high-fiber', 'everyday'],
     ingredients: [
       { name: 'sweet corn', qty: 100, unit: 'g', note: 'frozen or canned kernels' },
       { name: 'cucumber', qty: 0.25, unit: 'pc' },
@@ -2533,7 +2533,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 20,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['steamed', 'quick', 'high-fiber'],
+    tags: ['steamed', 'quick', 'high-fiber', 'everyday'],
     ingredients: [
       { name: 'sweet potato', qty: 150, unit: 'g', note: 'Aldi: Süßkartoffel' },
       { name: 'peanuts', qty: 10, unit: 'g', note: 'roasted, crushed' },
@@ -2574,7 +2574,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'low-carb', 'batch-cook'],
+    tags: ['high-protein', 'low-carb', 'batch-cook', 'everyday'],
     ingredients: [
       { name: 'peanuts', qty: 30, unit: 'g', note: 'raw with skin, soaked 2 hours; Aldi: Erdnüsse ungesalzen' },
       { name: 'lemon', qty: 0.25, unit: 'pc' },
@@ -2614,7 +2614,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 20,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'leftover-friendly'],
+    tags: ['quick', 'leftover-friendly', 'everyday'],
     ingredients: [
       { name: 'dosa batter', qty: 120, unit: 'ml', note: 'leftover idli or dosa batter' },
       { name: 'onion', qty: 0.25, unit: 'pc', note: 'finely chopped' },
@@ -2658,7 +2658,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['steamed', 'batch-cook'],
+    tags: ['steamed', 'batch-cook', 'everyday'],
     ingredients: [
       { name: 'rice flour', qty: 35, unit: 'g', note: 'coarse idiyappam or kozhukattai flour' },
       { name: 'moong dal', qty: 10, unit: 'g', note: 'soaked 30 min' },
@@ -2702,7 +2702,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 10,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'low-fat'],
+    tags: ['quick', 'low-fat', 'everyday'],
     ingredients: [
       { name: 'puffed rice', qty: 30, unit: 'g', note: 'pori / murmura, Indian store' },
       { name: 'peanuts', qty: 15, unit: 'g', note: 'roasted' },
@@ -2748,7 +2748,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 10,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'high-fiber', 'quick'],
+    tags: ['high-protein', 'high-fiber', 'quick', 'everyday'],
     ingredients: [
       { name: 'sprouts', qty: 100, unit: 'g', note: 'moong sprouts, home-grown from whole moong or bought' },
       { name: 'frozen grated coconut', qty: 10, unit: 'g' },
@@ -2794,7 +2794,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 35,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'high-fiber', 'batch-cook'],
+    tags: ['high-protein', 'high-fiber', 'batch-cook', 'everyday'],
     ingredients: [
       { name: 'horse gram', qty: 40, unit: 'g', note: 'kollu, soaked overnight' },
       { name: 'frozen grated coconut', qty: 10, unit: 'g' },
@@ -2839,7 +2839,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 15,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'batch-cook', 'comfort'],
+    tags: ['quick', 'batch-cook', 'comfort', 'everyday'],
     ingredients: [
       { name: 'dates', qty: 30, unit: 'g', note: 'soft, pitted; Aldi: Datteln entsteint' },
       { name: 'peanuts', qty: 15, unit: 'g', note: 'roasted, skins rubbed off' },
@@ -2879,7 +2879,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 15,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'comfort'],
+    tags: ['quick', 'comfort', 'everyday'],
     ingredients: [
       { name: 'ragi flour', qty: 25, unit: 'g', note: 'or sprouted ragi flour' },
       { name: 'low fat milk', qty: 150, unit: 'ml', note: 'Aldi: Fettarme Milch 1.5% Milsani' },
@@ -2921,7 +2921,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 5,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'low-carb'],
+    tags: ['quick', 'low-carb', 'everyday'],
     ingredients: [
       { name: 'curd', qty: 120, unit: 'g', note: 'thick; Aldi: Naturjoghurt 3.5% Milsani' },
       { name: 'pomegranate', qty: 60, unit: 'g', note: 'seeds / arils; Granatapfel (Aldi or Turkish store)' },

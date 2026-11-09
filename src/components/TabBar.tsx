@@ -1,12 +1,13 @@
-import { IconCalendar, IconCart, IconHome, IconUser } from './Icons'
+import { IconBook, IconCalendar, IconCart, IconHome, IconUsers } from './Icons'
 
-export type Tab = 'today' | 'plan' | 'grocery' | 'me'
+export type Tab = 'today' | 'plan' | 'recipes' | 'grocery' | 'me'
 
 const TABS: { id: Tab; label: string; Icon: typeof IconHome }[] = [
   { id: 'today', label: 'Today', Icon: IconHome },
   { id: 'plan', label: 'Plan', Icon: IconCalendar },
+  { id: 'recipes', label: 'Recipes', Icon: IconBook },
   { id: 'grocery', label: 'Grocery', Icon: IconCart },
-  { id: 'me', label: 'Me', Icon: IconUser }
+  { id: 'me', label: 'Family', Icon: IconUsers }
 ]
 
 export function TabBar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {

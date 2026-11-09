@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { FamilyProvider, useFamily } from './state'
+import { FamilyProvider, useFamily, decodeSetup } from './state'
 import { TabBar, type Tab } from './components/TabBar'
 import { Today } from './screens/Today'
 import { Plan } from './screens/Plan'
+import { Recipes } from './screens/Recipes'
 import { Grocery } from './screens/Grocery'
 import { Me } from './screens/Me'
 import { Welcome } from './screens/Welcome'
@@ -24,6 +25,22 @@ function ThemeSync() {
     mq.addEventListener('change', apply)
     return () => mq.removeEventListener('change', apply)
   }, [theme])
+  return null
+}
+
+/** Imports a family setup shared as #setup=... (from the Family screen on another phone). */
+function SetupImport() {
+  const { importSetup, profiles } = useFamily()
+  useEffect(() => {
+    const m = location.hash.match(/#setup=([A-Za-z0-9_-]+)/)
+    if (!m) return
+    const payload = decodeSetup(m[1])
+    history.replaceState(null, '', location.pathname + location.search)
+    if (!payload) return
+    const names = payload.profiles.map((p) => p.name).join(', ')
+    if (profiles.length === 0 || confirm(`Replace this phone's family setup with the shared one (${names})? Weight logs and swaps stay.`)) importSetup(payload)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   return null
 }
 
@@ -53,8 +70,9 @@ function Shell() {
   return (
     <>
       <main className="screen" key={tab}>
-        {tab === 'today' && <Today date={date} setDate={setDate} />}
+        {tab === 'today' && <Today date={date} setDate={setDate} goToFamily={() => switchTab('me')} />}
         {tab === 'plan' && <Plan openDay={openDay} />}
+        {tab === 'recipes' && <Recipes />}
         {tab === 'grocery' && <Grocery />}
         {tab === 'me' && <Me />}
       </main>
@@ -67,6 +85,7 @@ export default function App() {
   return (
     <FamilyProvider>
       <ThemeSync />
+      <SetupImport />
       <div className="app">
         <Shell />
       </div>

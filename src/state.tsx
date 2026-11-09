@@ -4,7 +4,7 @@ import { DISHES, DISH_BY_ID } from './data'
 import type { Region } from './data/prices'
 import { loadJSON, useStored } from './lib/storage'
 import { targetsOf, portionFactor, dayFactor, type Profile, type Targets } from './lib/nutrition'
-import { mealsFor, type Overrides, type Meals } from './lib/planner'
+import { mealsFor, applyDislikes, type Overrides, type Meals, type PlanOptions } from './lib/planner'
 import type { ISODate } from './lib/dates'
 
 export interface WeightEntry {
@@ -13,6 +13,7 @@ export interface WeightEntry {
 }
 
 export type Theme = 'light' | 'dark' | 'system'
+export type Pref = 'like' | 'dislike'
 
 export interface Person {
   profile: Profile
@@ -30,9 +31,20 @@ export interface Settings {
   theme: Theme
   /** welcome screen completed */
   onboarded: boolean
+  /** also offer occasional (less familiar) dishes on weekends */
+  adventurous: boolean
 }
 
-const DEFAULT_SETTINGS: Settings = { region: 'DE', weeklyBudget: 0, theme: 'light', onboarded: false }
+const DEFAULT_SETTINGS: Settings = { region: 'DE', weeklyBudget: 0, theme: 'light', onboarded: false, adventurous: false }
+
+/** What a day looks like after swaps and dislikes. */
+export interface DayMeals {
+  meals: Meals
+  /** slots replaced automatically because the planned dish is disliked */
+  replaced: Slot[]
+}
+
+export type Eaten = Record<ISODate, Partial<Record<Slot, boolean>>>
 
 interface FamilyState {
   dishes: Dish[]
@@ -46,14 +58,29 @@ interface FamilyState {
   familyFactor: number
   settings: Settings
   setSettings: (patch: Partial<Settings>) => void
+  planOptions: PlanOptions
   overrides: Overrides
   setOverride: (date: ISODate, slot: Slot, dishId: string | null) => void
   clearOverrides: () => void
   weights: Record<string, WeightEntry[]>
   logWeight: (profileId: string, date: ISODate, kg: number) => void
   removeWeight: (profileId: string, date: ISODate) => void
+  prefs: Record<string, Pref>
+  setPref: (dishId: string, pref: Pref | null) => void
+  eaten: Eaten
+  setEaten: (date: ISODate, slot: Slot, on: boolean) => void
   mealsOn: (date: ISODate) => Meals
+  dayOn: (date: ISODate) => DayMeals
   portionFor: (dish: Dish, slot: Slot, person: Person) => number
+  /** export the family setup (profiles + settings) as a shareable URL */
+  setupLink: () => string
+  importSetup: (payload: SetupPayload) => void
+}
+
+export interface SetupPayload {
+  v: 1
+  profiles: Profile[]
+  settings: Partial<Settings>
 }
 
 const Ctx = createContext<FamilyState | null>(null)
@@ -70,11 +97,32 @@ function migrateProfiles(list: Profile[]): Profile[] {
   return out
 }
 
+export function encodeSetup(payload: SetupPayload): string {
+  const json = JSON.stringify(payload)
+  const b64 = btoa(unescape(encodeURIComponent(json)))
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+export function decodeSetup(s: string): SetupPayload | null {
+  try {
+    const b64 = s.replace(/-/g, '+').replace(/_/g, '/')
+    const json = decodeURIComponent(escape(atob(b64)))
+    const p = JSON.parse(json) as SetupPayload
+    if (p && p.v === 1 && Array.isArray(p.profiles)) return p
+  } catch {
+    /* ignore */
+  }
+  return null
+}
+
 export function FamilyProvider({ children }: { children: ReactNode }) {
   const [rawProfiles, setProfiles] = useStored<Profile[]>('profiles', [])
   const [overrides, setOverrides] = useStored<Overrides>('overrides', {})
   const [weights, setWeights] = useStored<Record<string, WeightEntry[]>>('weights', {})
-  const [settings, setSettingsRaw] = useStored<Settings>('settings', { ...DEFAULT_SETTINGS, theme: loadJSON<Theme>('theme', 'light'), onboarded: loadJSON<Profile[]>('profiles', []).length > 0 })
+  const [prefs, setPrefs] = useStored<Record<string, Pref>>('prefs', {})
+  const [eaten, setEatenRaw] = useStored<Eaten>('eaten', {})
+  const [settingsRaw, setSettingsRaw] = useStored<Settings>('settings', { ...DEFAULT_SETTINGS, theme: loadJSON<Theme>('theme', 'light'), onboarded: loadJSON<Profile[]>('profiles', []).length > 0 })
+  const settings = useMemo<Settings>(() => ({ ...DEFAULT_SETTINGS, ...settingsRaw }), [settingsRaw])
 
   const profiles = useMemo(() => migrateProfiles(rawProfiles), [rawProfiles])
 
@@ -95,6 +143,14 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
     return Math.round(sum * 100) / 100
   }, [people])
 
+  const planOptions = useMemo<PlanOptions>(() => ({ adventurous: settings.adventurous }), [settings.adventurous])
+  const disliked = useMemo(() => new Set(Object.keys(prefs).filter((k) => prefs[k] === 'dislike')), [prefs])
+
+  const dayOn = (date: ISODate): DayMeals => {
+    const base = mealsFor(date, DISHES, overrides, planOptions)
+    return applyDislikes(date, base, DISHES, disliked, overrides[date] ?? {})
+  }
+
   const value: FamilyState = {
     dishes: DISHES,
     byId: DISH_BY_ID,
@@ -105,7 +161,8 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
     children: kids,
     familyFactor,
     settings,
-    setSettings: (patch) => setSettingsRaw((prev) => ({ ...prev, ...patch })),
+    setSettings: (patch) => setSettingsRaw((prev) => ({ ...DEFAULT_SETTINGS, ...prev, ...patch })),
+    planOptions,
     overrides,
     setOverride: (date, slot, dishId) =>
       setOverrides((prev) => {
@@ -125,8 +182,35 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
         return { ...prev, [pid]: list }
       }),
     removeWeight: (pid, date) => setWeights((prev) => ({ ...prev, [pid]: (prev[pid] ?? []).filter((w) => w.date !== date) })),
-    mealsOn: (date) => mealsFor(date, DISHES, overrides),
-    portionFor: (dish, slot, person) => portionFactor(dish, person.profile, person.targets, slot)
+    prefs,
+    setPref: (id, pref) =>
+      setPrefs((prev) => {
+        const next = { ...prev }
+        if (pref) next[id] = pref
+        else delete next[id]
+        return next
+      }),
+    eaten,
+    setEaten: (date, slot, on) =>
+      setEatenRaw((prev) => {
+        const next = { ...prev, [date]: { ...(prev[date] ?? {}) } }
+        if (on) next[date][slot] = true
+        else delete next[date][slot]
+        if (Object.keys(next[date]).length === 0) delete next[date]
+        return next
+      }),
+    mealsOn: (date) => dayOn(date).meals,
+    dayOn,
+    portionFor: (dish, slot, person) => portionFactor(dish, person.profile, person.targets, slot),
+    setupLink: () => {
+      const payload: SetupPayload = { v: 1, profiles, settings: { region: settings.region, weeklyBudget: settings.weeklyBudget, adventurous: settings.adventurous } }
+      const base = location.href.split('#')[0]
+      return `${base}#setup=${encodeSetup(payload)}`
+    },
+    importSetup: (payload) => {
+      setProfiles(payload.profiles)
+      setSettingsRaw((prev) => ({ ...DEFAULT_SETTINGS, ...prev, ...payload.settings, onboarded: true }))
+    }
   }
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

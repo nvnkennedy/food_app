@@ -11,7 +11,7 @@ export const MEASURES = [
 ]
 
 function plural(item: string, n: number): string {
-  if (n === 1) return item
+  if (n <= 1) return item
   const base = item.split(' (')[0]
   const rest = item.slice(base.length)
   if (/(s|sh|ch|x)$/.test(base)) return base + 'es' + rest

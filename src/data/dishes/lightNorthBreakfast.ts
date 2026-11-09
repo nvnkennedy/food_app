@@ -33,7 +33,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 15,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'quick', 'low-carb'],
+    tags: ['high-protein', 'quick', 'low-carb', 'everyday'],
     ingredients: [
       { name: 'eggs', qty: 3, unit: 'pc', note: 'Aldi Freilandeier' },
       { name: 'onion', qty: 0.25, unit: 'pc', note: 'finely chopped' },
@@ -83,7 +83,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 15,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'quick'],
+    tags: ['high-protein', 'quick', 'everyday'],
     ingredients: [
       { name: 'eggs', qty: 2, unit: 'pc', note: 'Aldi Freilandeier' },
       { name: 'onion', qty: 0.5, unit: 'pc' },
@@ -331,7 +331,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 25,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['one-pot', 'high-fiber', 'comfort', 'quick'],
+    tags: ['one-pot', 'high-fiber', 'comfort', 'quick', 'everyday'],
     ingredients: [
       { name: 'rolled oats', qty: 45, unit: 'g', note: 'Aldi: Haferflocken kernig' },
       { name: 'moong dal', qty: 30, unit: 'g' },
@@ -894,7 +894,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 40,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['high-iron', 'high-protein', 'comfort', 'batch-cook'],
+    tags: ['high-iron', 'high-protein', 'comfort', 'batch-cook', 'everyday'],
     ingredients: [
       { name: 'horse gram', qty: 40, unit: 'g', note: 'kollu, Indian store; soak overnight' },
       { name: 'sona masoori rice', qty: 50, unit: 'g', note: 'or basmati' },
@@ -1057,7 +1057,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 20,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'one-pot'],
+    tags: ['quick', 'one-pot', 'everyday'],
     ingredients: [
       { name: 'poha', qty: 60, unit: 'g', note: 'thick flattened rice' },
       { name: 'onion', qty: 0.5, unit: 'pc' },
@@ -1106,7 +1106,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 20,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'one-pot'],
+    tags: ['quick', 'one-pot', 'everyday'],
     ingredients: [
       { name: 'poha', qty: 60, unit: 'g', note: 'thick' },
       { name: 'frozen peas', qty: 40, unit: 'g', note: 'Aldi Erbsen TK' },
@@ -1402,7 +1402,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 15,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'one-pot'],
+    tags: ['quick', 'one-pot', 'everyday'],
     ingredients: [
       { name: 'rolled oats', qty: 50, unit: 'g', note: 'Aldi: Haferflocken kernig' },
       { name: 'onion', qty: 0.25, unit: 'pc' },
@@ -1540,7 +1540,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 25,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'quick'],
+    tags: ['high-protein', 'quick', 'everyday'],
     ingredients: [
       { name: 'eggs', qty: 2, unit: 'pc', note: 'Aldi Freilandeier' },
       { name: 'atta', qty: 35, unit: 'g', note: 'for 1 roti' },
@@ -1683,7 +1683,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 12,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick'],
+    tags: ['quick', 'everyday'],
     ingredients: [
       { name: 'eggs', qty: 2, unit: 'pc', note: 'Aldi Freilandeier' },
       { name: 'whole wheat bread', qty: 1, unit: 'pc', note: 'slice; Aldi Vollkorntoast' },
@@ -1726,7 +1726,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 12,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['low-carb', 'quick', 'batch-cook'],
+    tags: ['low-carb', 'quick', 'batch-cook', 'everyday'],
     ingredients: [
       { name: 'eggs', qty: 2, unit: 'pc', note: 'Aldi Freilandeier' },
       { name: 'black pepper', qty: 1, unit: 'pinch' },
@@ -1763,7 +1763,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 10,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'batch-cook'],
+    tags: ['quick', 'batch-cook', 'everyday'],
     ingredients: [
       { name: 'makhana', qty: 25, unit: 'g' },
       { name: 'ghee', qty: 0.5, unit: 'tsp', note: 'or Aldi Butaris Butterschmalz' },
@@ -1803,7 +1803,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 10,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick'],
+    tags: ['quick', 'everyday'],
     ingredients: [
       { name: 'peanuts', qty: 25, unit: 'g', note: 'roasted or boiled; Aldi Erdnüsse ungesalzen' },
       { name: 'onion', qty: 0.25, unit: 'pc', note: 'finely chopped' },
@@ -1846,7 +1846,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 3,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick'],
+    tags: ['quick', 'everyday'],
     ingredients: [
       { name: 'apple', qty: 1, unit: 'pc', note: 'or 1 small banana' },
       { name: 'peanut butter', qty: 1, unit: 'tbsp', note: 'no added sugar; Aldi Erdnussbutter ohne Zucker' },
