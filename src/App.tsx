@@ -19,7 +19,7 @@ function ThemeSync() {
       const dark = theme === 'dark' || (theme === 'system' && mq.matches)
       root.dataset.theme = dark ? 'dark' : 'light'
       const meta = document.querySelector('meta[name=theme-color]')
-      if (meta) meta.setAttribute('content', dark ? '#0f1311' : '#f7f8f5')
+      if (meta) meta.setAttribute('content', dark ? '#0b0d10' : '#f7f8f5')
     }
     apply()
     mq.addEventListener('change', apply)
