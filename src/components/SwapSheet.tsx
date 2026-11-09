@@ -59,7 +59,7 @@ export function SwapSheet({ slot, current, isOverridden, onPick, onReset, onClos
                 <div className="swap-name">{d.name}</div>
                 <div className="chips">
                   <span className={`chip chip-${d.protein}`}>{PROTEIN_LABEL[d.protein]}</span>
-                  <span className={`chip${d.cuisine === 'pasta' ? ' chip-pasta' : ''}`}>{CUISINE_LABEL[d.cuisine]}</span>
+                  <span className="chip">{CUISINE_LABEL[d.cuisine]}</span>
                 </div>
               </span>
               <span className="swap-nutri">

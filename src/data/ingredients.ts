@@ -46,7 +46,7 @@ export const INGREDIENT_STORE: Record<string, Store> = {
   'walnuts': 'german', 'chia seeds': 'german', 'flax seeds': 'german', 'sesame seeds': 'german', 'raisins': 'german', 'peanut butter': 'german',
   'vegetable stock': 'german', 'chicken stock': 'german', 'cream': 'german', 'white wine vinegar': 'german', 'capers': 'german',
   'olives': 'german', 'anchovies': 'german', 'frozen broccoli': 'german', 'frozen green beans': 'german', 'sweet potato': 'german', 'radish': 'german',
-  'tofu': 'german', 'edamame': 'german', 'dill': 'german', 'eggplant': 'german', 'aubergine': 'german', 'dried thyme': 'german', 'dried rosemary': 'german', 'mustard': 'german', 'broken wheat': 'indian', 'makhana': 'indian', 'wholegrain crispbread': 'german', 'rice cakes': 'german', 'hummus': 'german', 'water': 'german'
+  'tofu': 'german', 'edamame': 'german', 'puffed rice': 'indian', 'pomegranate': 'german', 'pumpkin seeds': 'german', 'sunflower seeds': 'german', 'dill': 'german', 'eggplant': 'german', 'aubergine': 'german', 'dried thyme': 'german', 'dried rosemary': 'german', 'mustard': 'german', 'broken wheat': 'indian', 'makhana': 'indian', 'wholegrain crispbread': 'german', 'rice cakes': 'german', 'hummus': 'german', 'water': 'german'
 }
 
 export function storeFor(name: string): Store {

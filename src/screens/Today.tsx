@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import type { Dish, Slot } from '../data/types'
-import { useFamily, CHILD } from '../state'
+import { useFamily } from '../state'
 import { MealCard } from '../components/MealCard'
 import { RecipeSheet } from '../components/RecipeSheet'
 import { SwapSheet } from '../components/SwapSheet'
-import { Ring } from '../components/Ring'
+import { NutrientPanel } from '../components/NutrientPanel'
 import { IconChevronLeft, IconChevronRight, IconToday } from '../components/Icons'
 import { SLOT_ORDER } from '../lib/nutrition'
 import { addDays, fmtDow, fmtDayNum, fromISO, todayISO, weekStart, type ISODate } from '../lib/dates'
@@ -20,7 +20,7 @@ function heading(date: ISODate, today: ISODate): string {
 }
 
 export function Today({ date, setDate, goToMe }: { date: ISODate; setDate: (d: ISODate) => void; goToMe: () => void }) {
-  const { byId, people, childEnabled, overrides, setOverride, mealsOn, portionFor } = useFamily()
+  const { byId, people, overrides, setOverride, mealsOn } = useFamily()
   const [open, setOpen] = useState<Slot | null>(null)
   const [swap, setSwap] = useState<Slot | null>(null)
 
@@ -30,23 +30,6 @@ export function Today({ date, setDate, goToMe }: { date: ISODate; setDate: (d: I
   const d = fromISO(date)
   const ws = weekStart(date)
   const week = Array.from({ length: 7 }, (_, i) => addDays(ws, i))
-
-  const totals = useMemo(
-    () =>
-      people.map((p) => {
-        let kcal = 0
-        let prot = 0
-        for (const slot of SLOT_ORDER) {
-          const dish = byId.get(meals[slot])
-          if (!dish) continue
-          const f = portionFor(dish, slot, p)
-          kcal += dish.kcal * f
-          prot += dish.protein_g * f
-        }
-        return { p, kcal: Math.round(kcal), prot: Math.round(prot) }
-      }),
-    [people, meals, byId, portionFor]
-  )
 
   const openDish: Dish | undefined = open ? byId.get(meals[open]) : undefined
   const swapDish: Dish | undefined = swap ? byId.get(meals[swap]) : undefined
@@ -93,45 +76,19 @@ export function Today({ date, setDate, goToMe }: { date: ISODate; setDate: (d: I
           </span>
           <div className="grow">
             <div className="h3">Set your targets</div>
-            <div className="muted small">Add you and your partner to get daily calorie goals and personal portion sizes on every meal.</div>
+            <div className="muted small">Add you and your partner to get daily calorie, protein, iron, zinc and magnesium targets and plates sized for each of you.</div>
           </div>
           <button className="btn sm" onClick={goToMe}>
             Set up
           </button>
         </div>
       ) : (
-        <div className="card col" style={{ gap: 12 }}>
-          {totals.map(({ p, kcal, prot }, i) => (
-            <div key={p.profile.id} className="person">
-              <Ring value={kcal} max={p.targets.kcal} label={`${p.profile.name} calories`} />
-              <div className="grow">
-                <div className="row-between">
-                  <span className="name row" style={{ gap: 6 }}>
-                    <span className={'avatar' + (i === 1 ? ' a2' : '')}>{p.profile.name.slice(0, 1).toUpperCase()}</span>
-                    {p.profile.name}
-                  </span>
-                  <span className={'small ' + (kcal > p.targets.kcal * 1.05 ? 'bad' : 'muted')}>
-                    <b>{kcal}</b> / {p.targets.kcal} kcal
-                  </span>
-                </div>
-                <div className="mini">
-                  <div style={{ width: Math.min(100, Math.round((prot / p.targets.protein_g) * 100)) + '%' }} />
-                </div>
-                <div className="row-between xs faint" style={{ marginTop: 3 }}>
-                  <span>Protein</span>
-                  <span>
-                    {prot} / {p.targets.protein_g} g
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <NutrientPanel meals={meals} />
       )}
 
       {lambToday && (
         <div className="banner">
-          <span aria-hidden>🐑</span> Lamb treat today. The next one comes in two months.
+          <span aria-hidden>🐑</span> Lamb treat today. Lamb is the richest zinc source on the menu; the next one comes in two months.
         </div>
       )}
 
@@ -139,11 +96,9 @@ export function Today({ date, setDate, goToMe }: { date: ISODate; setDate: (d: I
         <MealCard key={slot} slot={slot} dish={byId.get(meals[slot])} swapped={!!dayOv[slot]} onOpen={() => setOpen(slot)} onSwap={() => setSwap(slot)} />
       ))}
 
-      {childEnabled && (
-        <div className="faint xs" style={{ textAlign: 'center', padding: '0 12px' }}>
-          Little one eats the same food, about {CHILD.factor}× portions, chilli reduced.
-        </div>
-      )}
+      <div className="faint xs" style={{ textAlign: 'center', padding: '0 12px' }}>
+        Tap a meal for the recipe, nutrients and how to absorb more. No tea or coffee within an hour of iron-rich meals.
+      </div>
 
       {open && openDish && (
         <RecipeSheet

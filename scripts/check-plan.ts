@@ -26,6 +26,10 @@ for (const d of DISHES) {
   if (d.kcal < 60 || d.kcal > 800) warn(`${d.id}: odd kcal ${d.kcal}`)
   if (d.steps.length < 3) warn(`${d.id}: only ${d.steps.length} steps`)
   if (d.ingredients.length < 3) warn(`${d.id}: only ${d.ingredients.length} ingredients`)
+  if (!d.description || d.description.length < 30) warn(`${d.id}: weak description`)
+  if (!d.portion || d.portion.length === 0) warn(`${d.id}: no portion`)
+  if (!d.absorption || d.absorption.length < 30) warn(`${d.id}: weak absorption note`)
+  if (!(d.iron_mg > 0) || !(d.zinc_mg > 0) || !(d.magnesium_mg > 0)) warn(`${d.id}: missing minerals`)
   const macroKcal = d.protein_g * 4 + d.carbs_g * 4 + d.fat_g * 9
   if (Math.abs(macroKcal - d.kcal) > d.kcal * 0.3) warn(`${d.id}: macros (${macroKcal} kcal) far from kcal ${d.kcal}`)
   for (const ing of d.ingredients) {
@@ -68,7 +72,11 @@ for (let m = 0; m < 12; m++) {
   }
   const distinct = new Set(plan.flatMap((d) => Object.values(d.meals))).size
   console.log(
-    `  ${2026}-${String(m + 1).padStart(2, '0')}: pasta ${Math.round(stats.pastaShare * 100)}%  ` +
+    `  ${2026}-${String(m + 1).padStart(2, '0')}: ` +
+      Object.entries(stats.cuisines)
+        .map(([k, v]) => `${k} ${v}`)
+        .join('/') +
+      '  ' +
       Object.entries(stats.proteins)
         .map(([k, v]) => `${k} ${v}`)
         .join(', ') +

@@ -1,5 +1,5 @@
 import type { Dish, Protein, Slot } from '../data/types'
-import { rngFor, type Rng } from './rng'
+import { rngFor } from './rng'
 import { daysInMonth, isWeekend, toISO, type ISODate } from './dates'
 
 export type Meals = Record<Slot, string> // dish id per slot
@@ -8,13 +8,11 @@ export interface DayPlan {
   meals: Meals
 }
 
-const PLAN_VERSION = 'v1'
+const PLAN_VERSION = 'v2'
 const MAIN_SLOTS: ('lunch' | 'dinner')[] = ['lunch', 'dinner']
 
-/** Share of lunches+dinners that are pasta. */
-const PASTA_SHARE = 0.3
-/** Within Indian meals how often North Indian / light plates appear vs South Indian. */
-const CUISINE_WEIGHT = { south: 1.0, north: 0.45, light: 0.35, pasta: 1.0 } as const
+/** How often each cuisine appears: South Indian leads, North Indian and light plates add variety. */
+const CUISINE_WEIGHT: Record<Dish['cuisine'], number> = { south: 1.0, north: 0.45, light: 0.4 }
 
 /** Weekly non-veg rhythm for 14 main slots (lunch + dinner x 7). */
 const WEEK_PROTEINS: Protein[] = [
@@ -50,26 +48,18 @@ export function generateMonth(year: number, month0: number, dishes: Dish[]): Day
   const usedCount = new Map<string, number>()
   const plan: DayPlan[] = dates.map((date) => ({ date, meals: { breakfast: '', snack: '', lunch: '', dinner: '' } }))
 
-  // ---------- 1. Decide the protein + pasta spec for every lunch/dinner ----------
-  type Spec = { protein: Protein; pasta: boolean }
-  const specs: Record<number, Record<'lunch' | 'dinner', Spec>> = {}
+  // ---------- 1. Decide the protein for every lunch/dinner ----------
+  const specs: Record<number, Record<'lunch' | 'dinner', Protein>> = {}
 
   for (let chunk = 0, start = 0; start < n; chunk++, start += 7) {
     const len = Math.min(7, n - start)
     const slots = len * 2
-    // proteins for this chunk, scaled from the 14-slot template
     let proteins: Protein[] = rng.shuffle(WEEK_PROTEINS).slice(0, slots)
     if (chunk % PRAWN_EVERY_N_WEEKS === 1) {
       const vi = proteins.indexOf('veg')
       if (vi >= 0) proteins[vi] = 'prawn'
     }
     proteins = rng.shuffle(proteins)
-
-    // pasta: ~30 % of slots, never twice on the same day
-    const pastaCount = Math.round(slots * PASTA_SHARE)
-    const pastaDays = rng.shuffle(Array.from({ length: len }, (_, i) => i)).slice(0, pastaCount)
-    const pastaAt = new Set<string>()
-    for (const d of pastaDays) pastaAt.add(`${d}:${rng.next() < 0.6 ? 'dinner' : 'lunch'}`)
 
     // avoid the same non-veg protein at lunch and dinner on one day
     for (let pass = 0; pass < 3; pass++) {
@@ -92,28 +82,18 @@ export function generateMonth(year: number, month0: number, dishes: Dish[]): Day
 
     let k = 0
     for (let d = 0; d < len; d++) {
-      const dayIdx = start + d
-      specs[dayIdx] = {
-        lunch: { protein: proteins[k++], pasta: pastaAt.has(`${d}:lunch`) },
-        dinner: { protein: proteins[k++], pasta: pastaAt.has(`${d}:dinner`) }
-      }
+      specs[start + d] = { lunch: proteins[k++], dinner: proteins[k++] }
     }
   }
 
   // Lamb: first weekend lunch after the first week of a lamb month.
   if (isLambMonth(month0) && dishes.some((d) => d.protein === 'lamb')) {
     const idx = dates.findIndex((d, i) => i >= 7 && isWeekend(d))
-    if (idx >= 0) specs[idx].lunch = { protein: 'lamb', pasta: false }
+    if (idx >= 0) specs[idx].lunch = 'lamb'
   }
 
   // ---------- 2. Pick dishes ----------
-  const pickDish = (
-    dayIdx: number,
-    slot: Slot,
-    filter: (d: Dish) => boolean,
-    weight: (d: Dish) => number,
-    minGapDays: number
-  ): Dish | undefined => {
+  const pickDish = (dayIdx: number, slot: Slot, filter: (d: Dish) => boolean, weight: (d: Dish) => number, minGapDays: number): Dish | undefined => {
     const weekend = isWeekend(dates[dayIdx])
     let pool = dishes.filter((d) => d.slots.includes(slot) && filter(d))
     if (!weekend) pool = pool.filter((d) => !d.tags.includes('weekend')) // weekend specials stay on weekends
@@ -129,6 +109,7 @@ export function generateMonth(year: number, month0: number, dishes: Dish[]): Day
       if (!weekend && d.effort === 'medium') w *= 0.55
       if (weekend && d.tags.includes('weekend')) w *= 3
       if (!weekend && d.tags.includes('quick')) w *= 1.3
+      if (d.tags.includes('high-iron')) w *= 1.25 // the family wants iron
       return w
     })
   }
@@ -138,35 +119,29 @@ export function generateMonth(year: number, month0: number, dishes: Dish[]): Day
     usedCount.set(dish.id, (usedCount.get(dish.id) ?? 0) + 1)
   }
 
-  const cuisineW = (d: Dish) => CUISINE_WEIGHT[d.cuisine]
+  const cuisineW = (d: Dish) => CUISINE_WEIGHT[d.cuisine] ?? 0.3
 
   for (let i = 0; i < n; i++) {
-    // Mains
     for (const slot of MAIN_SLOTS) {
-      const spec = specs[i][slot]
-      const wantCuisine = (d: Dish) => (spec.pasta ? d.cuisine === 'pasta' : d.cuisine !== 'pasta')
-      let dish =
-        pickDish(i, slot, (d) => wantCuisine(d) && d.protein === spec.protein, cuisineW, 10) ??
-        // relax: any protein but same cuisine bucket
-        pickDish(i, slot, (d) => wantCuisine(d) && (d.protein === 'veg' || d.protein === 'egg'), cuisineW, 10) ??
-        pickDish(i, slot, (d) => d.protein === spec.protein, cuisineW, 10) ??
+      const want = specs[i][slot]
+      const dish =
+        pickDish(i, slot, (d) => d.protein === want, cuisineW, 10) ??
+        pickDish(i, slot, (d) => d.protein === 'veg' || d.protein === 'egg', cuisineW, 10) ??
         pickDish(i, slot, () => true, cuisineW, 3)
       if (dish) {
         plan[i].meals[slot] = dish.id
         mark(dish, i)
       }
     }
-    // Breakfast: about 2 egg breakfasts a week, otherwise South-leaning tiffin
-    const eggDay = rng.next() < 2 / 7 && !(specs[i].lunch.protein === 'egg' || specs[i].dinner.protein === 'egg')
-    const bf =
-      pickDish(i, 'breakfast', (d) => (eggDay ? d.protein === 'egg' : d.protein !== 'egg'), cuisineW, 6) ??
-      pickDish(i, 'breakfast', () => true, cuisineW, 2)
+    // Breakfast: about 2 egg breakfasts a week, never on a day that already has egg mains
+    const eggDay = rng.next() < 2 / 7 && specs[i].lunch !== 'egg' && specs[i].dinner !== 'egg'
+    const bf = pickDish(i, 'breakfast', (d) => (eggDay ? d.protein === 'egg' : d.protein !== 'egg'), cuisineW, 6) ?? pickDish(i, 'breakfast', () => true, cuisineW, 2)
     if (bf) {
       plan[i].meals.breakfast = bf.id
       mark(bf, i)
     }
-    // Snack
-    const sn = pickDish(i, 'snack', () => true, () => 1, 3) ?? pickDish(i, 'snack', () => true, () => 1, 0)
+    // Snack: South Indian snacks preferred, kid friendly
+    const sn = pickDish(i, 'snack', () => true, (d) => (d.cuisine === 'south' ? 1 : 0.6) * (d.kidFriendly ? 1 : 0.5), 3) ?? pickDish(i, 'snack', () => true, () => 1, 0)
     if (sn) {
       plan[i].meals.snack = sn.id
       mark(sn, i)
@@ -214,10 +189,10 @@ export function mealsFor(date: ISODate, dishes: Dish[], overrides: Overrides): M
   return base
 }
 
-/** Summary counts, useful for a "this month" overview. */
+/** Summary counts for the month overview. */
 export function monthStats(plan: DayPlan[], byId: Map<string, Dish>) {
   const proteins: Record<string, number> = {}
-  let pasta = 0
+  const cuisines: Record<string, number> = {}
   let mains = 0
   for (const day of plan) {
     for (const slot of MAIN_SLOTS) {
@@ -225,10 +200,8 @@ export function monthStats(plan: DayPlan[], byId: Map<string, Dish>) {
       if (!d) continue
       mains++
       proteins[d.protein] = (proteins[d.protein] ?? 0) + 1
-      if (d.cuisine === 'pasta') pasta++
+      cuisines[d.cuisine] = (cuisines[d.cuisine] ?? 0) + 1
     }
   }
-  return { proteins, pasta, mains, pastaShare: mains ? pasta / mains : 0 }
+  return { proteins, cuisines, mains }
 }
-
-export type { Rng }

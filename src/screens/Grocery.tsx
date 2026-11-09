@@ -5,6 +5,7 @@ import { groceryFor, fmtQty, type Group } from '../lib/grocery'
 import { addDays, fmtShort, todayISO, weekStart, type ISODate } from '../lib/dates'
 import type { DayPlan } from '../lib/planner'
 import { IconCheck, IconChevronLeft, IconChevronRight } from '../components/Icons'
+import { germanName } from '../data/germanNames'
 
 const GROUP_TITLE: Record<Group, string> = { german: 'Supermarket', indian: 'Indian store', pantry: 'Pantry' }
 const GROUP_SUB: Record<Group, string> = { german: 'Rewe · Lidl · Edeka · Aldi', indian: 'Dals, rice, spices, curry leaves', pantry: 'Check you still have these' }
@@ -94,6 +95,7 @@ export function Grocery() {
                   </span>
                   <span className="grow">
                     <div className="g-name">{l.name}</div>
+                    {germanName(l.name) && <div className="g-de">{germanName(l.name)}</div>}
                     <div className="g-dishes">
                       {l.dishes.slice(0, 2).join(' · ')}
                       {l.dishes.length > 2 ? ` +${l.dishes.length - 2} more` : ''}

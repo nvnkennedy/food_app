@@ -53,7 +53,6 @@ export function Plan({ openDay }: { openDay: (d: ISODate) => void }) {
                 {PROTEIN_LABEL[p]} ×{stats.proteins[p]}
               </span>
             ))}
-          <span className="chip chip-pasta">Pasta {Math.round(stats.pastaShare * 100)}%</span>
         </div>
         <div className="muted xs" style={{ marginTop: 10 }}>
           The same plan appears on every phone. Meals you swap are marked and stay on this phone.

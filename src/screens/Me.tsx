@@ -97,16 +97,33 @@ export function Me() {
                 <span>kcal per day target</span>
               </div>
               <div className="tile">
-                <b>{targets.protein_g} g</b>
-                <span>protein per day</span>
-              </div>
-              <div className="tile">
-                <b>{bmi.toFixed(1)}</b>
-                <span>BMI · {bmiBand(bmi)}</span>
-              </div>
-              <div className="tile">
                 <b>{toGo > 0 ? `${toGo.toFixed(1)} kg` : '🎉'}</b>
-                <span>{toGo > 0 ? 'to goal' : 'goal reached'}</span>
+                <span>{toGo > 0 ? `to goal · BMI ${bmi.toFixed(1)} ${bmiBand(bmi)}` : 'goal reached'}</span>
+              </div>
+            </div>
+            <div className="card-title" style={{ marginBottom: 0 }}>
+              Daily nutrient targets
+            </div>
+            <div className="targets-row">
+              <div>
+                <b>{targets.protein_g} g</b>
+                <span>protein</span>
+              </div>
+              <div>
+                <b>{targets.fiber_g} g</b>
+                <span>fibre</span>
+              </div>
+              <div>
+                <b>{targets.iron_mg} mg</b>
+                <span>iron</span>
+              </div>
+              <div>
+                <b>{targets.zinc_mg} mg</b>
+                <span>zinc</span>
+              </div>
+              <div>
+                <b>{targets.magnesium_mg} mg</b>
+                <span>magnesium</span>
               </div>
             </div>
             <div className="muted xs">
@@ -155,7 +172,7 @@ export function Me() {
         <div className="setting">
           <div>
             <div className="t">Our 6-year-old eats with us</div>
-            <div className="s">Adds about {CHILD.factor}× of an adult serving to ingredients and the grocery list.</div>
+            <div className="s">Shows his plate on every meal, his nutrient totals, and adds about {CHILD.factor}× of an adult serving to the grocery list.</div>
           </div>
           <label className="switch">
             <input type="checkbox" checked={childEnabled} onChange={(e) => setChildEnabled(e.target.checked)} />
@@ -190,9 +207,11 @@ export function Me() {
       <section className="card">
         <div className="card-title">How the plan works</div>
         <ul className="bullets">
-          <li>About 70% Indian, mostly South Indian, and 30% pasta across lunches and dinners.</li>
-          <li>Each week: chicken 3×, fish 2×, egg 3×, the rest veg. Prawns every second week. Lamb once every two months, on a weekend.</li>
-          <li>Breakfast is tiffin: idly, dosa, poha, upma, oats, with eggs about twice a week.</li>
+          <li>Mostly South Indian home food, with North Indian and light high-protein plates for variety. No pasta.</li>
+          <li>Each week: chicken 3×, fish 2×, egg 3×, the rest dal and vegetables. Prawns every second week. Lamb once every two months, on a weekend.</li>
+          <li>Breakfast is tiffin: idli, dosa, poha, upma, ragi, oats, with eggs about twice a week. Snacks are South Indian and kid friendly.</li>
+          <li>Iron-rich plates are favoured, and every recipe says how to absorb more: lemon or tomato with dal and greens, dal with rice or roti for complete protein, soaked and fermented batters, no tea or coffee with meals.</li>
+          <li>Targets: protein 1.6 g per kg of goal weight, fibre 14 g per 1000 kcal, iron 18 mg (women) / 8 mg (men), zinc 8 / 11 mg, magnesium 310 / 420 mg. The little one: 1400 kcal, 24 g protein, 10 mg iron, 5 mg zinc, 130 mg magnesium.</li>
           <li>The plan is generated from the month, so both phones show the same meals without any account.</li>
           <li>Swap any meal from the Today screen when you feel like something else or have leftovers.</li>
         </ul>

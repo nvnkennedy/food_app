@@ -1596,3 +1596,190 @@ details summary::-webkit-details-marker {
 :root[data-theme='dark'] .seg button.active {
   background: var(--surface-3);
 }
+
+/* ---------- nutrients & plates ---------- */
+.chip-iron {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.chip-protein {
+  background: #e0f2fe;
+  color: #075985;
+}
+:root[data-theme='dark'] .chip-iron {
+  background: #7f1d1d;
+  color: #fecaca;
+}
+:root[data-theme='dark'] .chip-protein {
+  background: #0c4a6e;
+  color: #bae6fd;
+}
+
+.plates {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+}
+
+.plates li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.plates .avatar {
+  flex: none;
+  margin-top: 1px;
+}
+
+.nutri-rows {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.nutri-label {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.nutri-rows em {
+  font-style: normal;
+  font-weight: 700;
+  margin-left: 6px;
+  font-size: 12px;
+}
+
+.mini > div.low {
+  background: #f59e0b;
+}
+
+.mini > div.mid {
+  background: #84cc16;
+}
+
+.nutri {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.nutri b small {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-left: 1px;
+}
+
+.desc {
+  margin: -4px 0 0;
+  color: var(--text-2);
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.plate-std {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.eater {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.eater-plate {
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.eater-nutri {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.eater-nutri b {
+  color: var(--text);
+}
+
+.eater-nutri em {
+  font-style: normal;
+  color: var(--text-3);
+  margin-left: 2px;
+}
+
+.tip {
+  background: var(--accent-soft);
+  color: var(--accent-soft-ink);
+}
+
+.tip.green {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.measures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.measures b {
+  color: var(--text);
+}
+
+.ing-de {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 1px;
+}
+
+.g-de {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 1px;
+}
+
+.targets-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.targets-row div {
+  background: var(--surface-2);
+  border-radius: 12px;
+  padding: 8px 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.targets-row b {
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+
+.targets-row span {
+  font-size: 10.5px;
+  color: var(--text-2);
+}
+
+.meal .meal-sub {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

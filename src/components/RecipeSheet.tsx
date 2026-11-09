@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import type { Dish, Slot, Unit } from '../data/types'
+import { germanName } from '../data/germanNames'
 import { Sheet } from './Sheet'
 import { DishChips, dishEmoji } from './Chips'
 import { IconClock, IconSwap } from './Icons'
 import { useFamily, CHILD } from '../state'
-import { portionLabel, SLOT_LABEL } from '../lib/nutrition'
+import { fmtNutrient, NUTRIENTS, scaled, SLOT_LABEL, CHILD_TARGETS } from '../lib/nutrition'
+import { describePortion, MEASURES } from '../lib/portion'
 
 function fmtIng(qty: number, unit: Unit): string {
   let q = qty
@@ -22,6 +24,11 @@ export function RecipeSheet({ dish, slot, onClose, onSwap }: { dish: Dish; slot:
   const { people, childEnabled, familyFactor, portionFor } = useFamily()
   const [perServing, setPerServing] = useState(false)
   const mult = perServing ? 1 : familyFactor
+
+  const eaters = [
+    ...people.map((p, i) => ({ key: p.profile.id, name: p.profile.name, cls: i === 1 ? 'a2' : '', f: portionFor(dish, slot, p), targets: p.targets })),
+    ...(childEnabled ? [{ key: 'kid', name: 'Little one', cls: 'kid', f: CHILD.factor, targets: CHILD_TARGETS }] : [])
+  ]
 
   return (
     <Sheet
@@ -44,73 +51,84 @@ export function RecipeSheet({ dish, slot, onClose, onSwap }: { dish: Dish; slot:
           {dish.localName && <div className="muted small">{dish.localName}</div>}
         </div>
       </div>
+      <p className="desc">{dish.description}</p>
       <div className="row-between">
         <DishChips dish={dish} />
-        <span className="row small muted" style={{ gap: 4 }}>
-          <IconClock size={14} /> {dish.time_min} min · {dish.effort}
+        <span className="row small muted" style={{ gap: 4, flex: 'none' }}>
+          <IconClock size={14} /> {dish.time_min} min
         </span>
       </div>
 
-      <div>
+      <section className="card">
+        <div className="card-title">Nutrition · one adult serving</div>
         <div className="nutri">
+          {NUTRIENTS.map((n) => (
+            <div key={n.key}>
+              <b>
+                {fmtNutrient(n.key, dish[n.key])}
+                <small>{n.key === 'kcal' ? '' : n.unit}</small>
+              </b>
+              <span>{n.label}</span>
+            </div>
+          ))}
           <div>
-            <b>{dish.kcal}</b>
-            <span>kcal</span>
+            <b>
+              {dish.carbs_g}
+              <small>g</small>
+            </b>
+            <span>Carbs</span>
           </div>
           <div>
-            <b>{dish.protein_g}g</b>
-            <span>protein</span>
-          </div>
-          <div>
-            <b>{dish.carbs_g}g</b>
-            <span>carbs</span>
-          </div>
-          <div>
-            <b>{dish.fat_g}g</b>
-            <span>fat</span>
-          </div>
-          <div>
-            <b>{dish.fiber_g}g</b>
-            <span>fiber</span>
+            <b>
+              {dish.fat_g}
+              <small>g</small>
+            </b>
+            <span>Fat</span>
           </div>
         </div>
-        <div className="faint xs" style={{ marginTop: 6, textAlign: 'center' }}>
-          per one adult serving
-        </div>
-      </div>
+      </section>
 
-      {(people.length > 0 || childEnabled) && (
-        <section className="card">
-          <div className="card-title">Who eats how much</div>
-          <ul className="list">
-            {people.map((p, i) => {
-              const f = portionFor(dish, slot, p)
-              return (
-                <li key={p.profile.id} className="row">
-                  <span className={'avatar' + (i === 1 ? ' a2' : '')}>{p.profile.name.slice(0, 1).toUpperCase()}</span>
-                  <span className="grow">
-                    <b>{p.profile.name}</b> · {f}× serving, {portionLabel(f)}
-                  </span>
-                  <span className="muted small" style={{ textAlign: 'right' }}>
-                    {Math.round(dish.kcal * f)} kcal
-                    <br />
-                    {Math.round(dish.protein_g * f)} g protein
-                  </span>
-                </li>
-              )
-            })}
-            {childEnabled && (
-              <li className="row">
-                <span className="avatar kid">K</span>
-                <span className="grow">
-                  <b>Little one</b> · about {CHILD.factor}× serving, less chilli
-                </span>
-                <span className="muted small">{Math.round(dish.kcal * CHILD.factor)} kcal</span>
-              </li>
-            )}
-          </ul>
-        </section>
-      )}
+      <section className="card">
+        <div className="card-title">Standard plate · one adult</div>
+        <div className="plate-std">{describePortion(dish.portion, 1)}</div>
+        {eaters.length > 0 && (
+          <>
+            <div className="card-title" style={{ marginTop: 14 }}>
+              Your plates
+            </div>
+            <ul className="list">
+              {eaters.map((e) => {
+                const s = scaled(dish, e.f)
+                return (
+                  <li key={e.key} className="eater">
+                    <div className="row">
+                      <span className={'avatar ' + e.cls}>{e.name.slice(0, 1).toUpperCase()}</span>
+                      <b>{e.name}</b>
+                      <span className="faint xs">· {e.f}× serving</span>
+                    </div>
+                    <div className="eater-plate">{describePortion(dish.portion, e.f)}</div>
+                    <div className="eater-nutri">
+                      {NUTRIENTS.map((n) => (
+                        <span key={n.key}>
+                          <b>{fmtNutrient(n.key, s[n.key])}</b>
+                          {n.key === 'kcal' ? '' : n.unit} {n.short === 'kcal' ? '' : n.short}
+                          <em>{Math.round((s[n.key] / e.targets[n.key]) * 100)}%</em>
+                        </span>
+                      ))}
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
+            <div className="faint xs">Percent = share of that person's daily target covered by this meal.</div>
+          </>
+        )}
+      </section>
+
+      <section className="tip">
+        <b>Absorb more</b>
+        <span>{dish.absorption}</span>
+      </section>
 
       <section className="card">
         <div className="row-between">
@@ -127,15 +145,19 @@ export function RecipeSheet({ dish, slot, onClose, onSwap }: { dish: Dish; slot:
           </div>
         </div>
         <ul className="list ingredients" style={{ marginTop: 8 }}>
-          {dish.ingredients.map((ing, i) => (
-            <li key={i}>
-              <span className="ing-qty">{fmtIng(ing.qty * mult, ing.unit)}</span>
-              <span className="ing-name">
-                {ing.name}
-                {ing.note && <em> · {ing.note}</em>}
-              </span>
-            </li>
-          ))}
+          {dish.ingredients.map((ing, i) => {
+            const de = germanName(ing.name)
+            return (
+              <li key={i}>
+                <span className="ing-qty">{fmtIng(ing.qty * mult, ing.unit)}</span>
+                <span className="ing-name">
+                  {ing.name}
+                  {ing.note && <em> · {ing.note}</em>}
+                  {de && <div className="ing-de">{de}</div>}
+                </span>
+              </li>
+            )
+          })}
         </ul>
       </section>
 
@@ -151,11 +173,25 @@ export function RecipeSheet({ dish, slot, onClose, onSwap }: { dish: Dish; slot:
       </section>
 
       {dish.tip && (
-        <section className="tip">
+        <section className="tip green">
           <b>Tip</b>
           <span>{dish.tip}</span>
         </section>
       )}
+
+      <section className="card flat">
+        <div className="card-title">Measures used</div>
+        <div className="measures">
+          {MEASURES.map((m) => (
+            <span key={m.name}>
+              <b>{m.name}</b> ≈ {m.ml} ml
+            </span>
+          ))}
+          <span>
+            <b>1 cup cooked rice</b> ≈ 160 g
+          </span>
+        </div>
+      </section>
     </Sheet>
   )
 }
