@@ -1093,14 +1093,9 @@ svg {
 
 .filter-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  overflow-x: auto;
   padding: 2px 0;
-  scrollbar-width: none;
-}
-
-.filter-row::-webkit-scrollbar {
-  display: none;
 }
 
 .pill {
@@ -2210,4 +2205,16 @@ select.input {
   left: 0;
   background: var(--surface);
   z-index: 1;
+}
+
+/* horizontal scrollers keep a visible, slim scrollbar on desktop */
+.ntable-wrap.scroll {
+  scrollbar-width: thin;
+}
+.ntable-wrap.scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.ntable-wrap.scroll::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+  border-radius: 3px;
 }
