@@ -13,9 +13,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'],
       manifest: {
-        name: 'Virundhu',
-        short_name: 'Virundhu',
-        description: 'Family meal planner: South Indian, a little pasta, weight-loss friendly.',
+        name: 'Platora',
+        short_name: 'Platora',
+        description: 'Platora (Virundhu): family meal planner for Indian home food with nutrition, budget and portions per person.',
         theme_color: '#f7f8f5',
         background_color: '#f7f8f5',
         display: 'standalone',

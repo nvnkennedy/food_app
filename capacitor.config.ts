@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
   appId: 'com.virundhu.app',
-  appName: 'Virundhu',
+  appName: 'Platora',
   webDir: 'dist',
   android: {
     allowMixedContent: false

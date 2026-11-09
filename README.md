@@ -1,4 +1,6 @@
-# Virundhu
+# Platora · Virundhu
+
+Store name Platora; the planner inside is called Virundhu.
 
 Family meal planner for an Indian family: South Indian home food on weekdays, North Indian and light
 plates as weekend extras, one feast a month, weight-loss friendly portions sized per person, and a
@@ -17,6 +19,11 @@ and an estimated cost. Works for Berlin (EUR, Aldi/Lidl + Indian store) and Indi
   magnesium targets; child targets by age), weight log, country, budget, theme.
 
 ## Plan rules
+
+- Diet (non-veg, pescatarian, eggetarian, vegetarian, vegan, Jain) and allergen exclusions gate every dish (`src/lib/dietary.ts`).
+- Cuisines are chosen by the family: Tamil, Kerala, Karnataka, Andhra, North Indian, Italian, German (regional tags on dishes).
+- Season: winter excludes cold dishes and limits curd-based plates; summer favours cooling plates. Iron-deficient members keep dairy away from iron-rich plates.
+- Ingredient substitutes for Indian towns and villages in `src/data/substitutes.ts`.
 
 - Weekdays: South Indian only. Weekends: South Indian plus North Indian and light soups/salads as extras.
 - One feast per month on the second Sunday (tag `feast`): biryani-style, lamb in every second month.

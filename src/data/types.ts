@@ -5,8 +5,12 @@
 
 export type Slot = 'breakfast' | 'lunch' | 'dinner' | 'snack'
 
-/** south = Tamil/Kerala/Andhra/Karnataka; north = rest of India; light = soups, salads, bowls, omelette-style dinners */
-export type Cuisine = 'south' | 'north' | 'light'
+/**
+ * south = Tamil/Kerala/Andhra/Karnataka (the regional tag 'tamil' | 'kerala' | 'karnataka' | 'andhra' in `tags` says which;
+ * no regional tag = tamil); north = rest of India; light = soups, salads, bowls, omelette-style dinners;
+ * italian / german = simple everyday European home food for families who want it on some days.
+ */
+export type Cuisine = 'south' | 'north' | 'light' | 'italian' | 'german'
 
 export type Protein = 'veg' | 'egg' | 'chicken' | 'fish' | 'prawn' | 'lamb'
 
@@ -68,7 +72,13 @@ export interface Dish {
   effort: 'easy' | 'medium'
   /** true if a 6-year-old will eat it as-is or with chilli reduced. */
   kidFriendly: boolean
-  /** Descriptive tags used by the planner: 'high-protein', 'high-iron', 'high-fiber', 'leftover-friendly', 'one-pot', 'weekend', 'quick', 'batch-cook', 'comfort', 'oven', 'steamed' */
+  /**
+   * Descriptive tags used by the planner: 'high-protein', 'high-iron', 'high-fiber', 'leftover-friendly', 'one-pot', 'weekend',
+   * 'quick', 'batch-cook', 'comfort', 'oven', 'steamed', 'everyday' (familiar home food, auto-planned), 'feast',
+   * regional: 'tamil' | 'kerala' | 'karnataka' | 'andhra',
+   * season: 'cold' (served cold/room temperature: curd rice, buttermilk, salads, overnight oats; avoided in winter),
+   *         'warming' (hot soups, rasam, pongal, kanji; favoured in winter), 'cooling' (favoured in summer).
+   */
   tags: string[]
   /** Per one adult serving */
   ingredients: Ingredient[]

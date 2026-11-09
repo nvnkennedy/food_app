@@ -131,7 +131,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 25,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'low-carb', 'high-fiber', 'leftover-friendly'],
+    tags: ['high-protein', 'low-carb', 'high-fiber', 'leftover-friendly', 'cold'],
     ingredients: [
       { name: 'chicken breast', qty: 130, unit: 'g', note: 'Aldi: Hähnchenbrustfilet Meine Metzgerei' },
       { name: 'canned chickpeas', qty: 100, unit: 'g', note: 'drained; Aldi: Kichererbsen Dose' },
@@ -230,7 +230,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 40,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['high-protein', 'low-carb', 'comfort', 'one-pot'],
+    tags: ['high-protein', 'low-carb', 'comfort', 'one-pot', 'warming'],
     ingredients: [
       { name: 'chicken thigh', qty: 150, unit: 'g', note: 'skinless, bone-in or boneless; Aldi: Hähnchen-Oberkeule' },
       { name: 'onion', qty: 0.5, unit: 'pc' },
@@ -281,7 +281,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 35,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'one-pot', 'comfort', 'batch-cook'],
+    tags: ['high-protein', 'one-pot', 'comfort', 'batch-cook', 'warming'],
     ingredients: [
       { name: 'chicken breast', qty: 120, unit: 'g', note: 'shredded after poaching; Aldi: Hähnchenbrustfilet' },
       { name: 'chicken stock', qty: 400, unit: 'ml', note: 'Aldi: Hühnerbrühe' },
@@ -331,7 +331,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 25,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['one-pot', 'high-fiber', 'comfort', 'quick', 'everyday'],
+    tags: ['one-pot', 'high-fiber', 'comfort', 'quick', 'everyday', 'warming'],
     ingredients: [
       { name: 'rolled oats', qty: 45, unit: 'g', note: 'Aldi: Haferflocken kernig' },
       { name: 'moong dal', qty: 30, unit: 'g' },
@@ -434,7 +434,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 15,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'low-carb', 'quick'],
+    tags: ['high-protein', 'low-carb', 'quick', 'cold'],
     ingredients: [
       { name: 'eggs', qty: 3, unit: 'pc', note: 'hard boiled; Aldi Freilandeier' },
       { name: 'onion', qty: 0.25, unit: 'pc', note: 'finely chopped' },
@@ -535,7 +535,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-iron', 'high-protein', 'high-fiber', 'one-pot', 'comfort', 'batch-cook'],
+    tags: ['high-iron', 'high-protein', 'high-fiber', 'one-pot', 'comfort', 'batch-cook', 'warming'],
     ingredients: [
       { name: 'masoor dal', qty: 60, unit: 'g', note: 'Aldi: Rote Linsen' },
       { name: 'frozen spinach', qty: 120, unit: 'g', note: 'Aldi: Blattspinat TK' },
@@ -637,7 +637,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 20,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'high-iron', 'high-fiber', 'quick', 'leftover-friendly'],
+    tags: ['high-protein', 'high-iron', 'high-fiber', 'quick', 'leftover-friendly', 'cold'],
     ingredients: [
       { name: 'beetroot', qty: 150, unit: 'g', note: 'cooked; Aldi: Rote Bete vorgekocht' },
       { name: 'canned chickpeas', qty: 120, unit: 'g', note: 'drained; Aldi: Kichererbsen Dose' },
@@ -738,7 +738,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-iron', 'high-protein', 'high-fiber', 'one-pot', 'batch-cook', 'comfort'],
+    tags: ['high-iron', 'high-protein', 'high-fiber', 'one-pot', 'batch-cook', 'comfort', 'warming'],
     ingredients: [
       { name: 'red lentils', qty: 60, unit: 'g', note: 'Aldi: Rote Linsen' },
       { name: 'carrot', qty: 1, unit: 'pc' },
@@ -840,7 +840,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 35,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'high-fiber', 'one-pot', 'comfort', 'leftover-friendly'],
+    tags: ['high-protein', 'high-fiber', 'one-pot', 'comfort', 'leftover-friendly', 'warming'],
     ingredients: [
       { name: 'millet', qty: 45, unit: 'g', note: 'Aldi: Hirse; or thinai / varagu from Indian store' },
       { name: 'moong dal', qty: 40, unit: 'g' },
@@ -894,7 +894,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 40,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['high-iron', 'high-protein', 'comfort', 'batch-cook', 'everyday'],
+    tags: ['high-iron', 'high-protein', 'comfort', 'batch-cook', 'everyday', 'warming'],
     ingredients: [
       { name: 'horse gram', qty: 40, unit: 'g', note: 'kollu, Indian store; soak overnight' },
       { name: 'sona masoori rice', qty: 50, unit: 'g', note: 'or basmati' },
@@ -1352,7 +1352,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['one-pot', 'high-fiber', 'comfort'],
+    tags: ['one-pot', 'high-fiber', 'comfort', 'warming'],
     ingredients: [
       { name: 'broken wheat', qty: 50, unit: 'g', note: 'daliya / bulgur' },
       { name: 'moong dal', qty: 20, unit: 'g' },
@@ -1402,7 +1402,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 15,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'one-pot', 'everyday'],
+    tags: ['quick', 'one-pot', 'everyday', 'warming'],
     ingredients: [
       { name: 'rolled oats', qty: 50, unit: 'g', note: 'Aldi: Haferflocken kernig' },
       { name: 'onion', qty: 0.25, unit: 'pc' },
@@ -1451,7 +1451,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 10,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'batch-cook', 'high-fiber'],
+    tags: ['quick', 'batch-cook', 'high-fiber', 'cold', 'cooling'],
     ingredients: [
       { name: 'rolled oats', qty: 45, unit: 'g', note: 'Aldi: Haferflocken kernig' },
       { name: 'greek yogurt', qty: 100, unit: 'g', note: 'or greek yogurt; Aldi: Griechischer Joghurt 2% Milsani' },
@@ -1497,7 +1497,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 5,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'high-protein', 'low-carb'],
+    tags: ['quick', 'high-protein', 'low-carb', 'cold', 'cooling'],
     ingredients: [
       { name: 'greek yogurt', qty: 200, unit: 'g', note: 'plain; Aldi: Griechischer Joghurt 2% Milsani' },
       { name: 'banana', qty: 0.5, unit: 'pc' },
@@ -1636,7 +1636,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 15,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['high-protein', 'high-iron', 'high-fiber', 'quick', 'low-carb'],
+    tags: ['high-protein', 'high-iron', 'high-fiber', 'quick', 'low-carb', 'cold', 'cooling'],
     ingredients: [
       { name: 'sprouts', qty: 100, unit: 'g', note: 'whole moong sprouts, home or store bought' },
       { name: 'eggs', qty: 2, unit: 'pc', note: 'hard boiled; Aldi Freilandeier' },
@@ -1803,7 +1803,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
     time_min: 10,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'everyday'],
+    tags: ['quick', 'everyday', 'cold'],
     ingredients: [
       { name: 'peanuts', qty: 25, unit: 'g', note: 'roasted or boiled; Aldi Erdnüsse ungesalzen' },
       { name: 'onion', qty: 0.25, unit: 'pc', note: 'finely chopped' },

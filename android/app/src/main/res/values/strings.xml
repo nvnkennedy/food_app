@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Virundhu</string>
-    <string name="title_activity_main">Virundhu</string>
+    <string name="app_name">Platora</string>
+    <string name="title_activity_main">Platora</string>
     <string name="package_name">com.virundhu.app</string>
     <string name="custom_url_scheme">com.virundhu.app</string>
 </resources>

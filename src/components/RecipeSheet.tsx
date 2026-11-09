@@ -10,6 +10,8 @@ import { useFamily } from '../state'
 import { scaled, SLOT_LABEL } from '../lib/nutrition'
 import { describePortion, MEASURES } from '../lib/portion'
 import { isFeast, isEveryday } from '../lib/planner'
+import { substituteFor } from '../data/substitutes'
+import { ALLERGENS, dishAllergens, hasDairy, isDairyMain } from '../lib/dietary'
 
 function fmtIng(qty: number, unit: Unit): string {
   let q = qty
@@ -30,6 +32,8 @@ export function RecipeSheet({ dish, slot, onClose, onSwap }: { dish: Dish; slot:
   const region = settings.region
   const cost = dish.ingredients.reduce((s, i) => s + costOf(region, i.name, i.qty * mult, i.unit), 0)
   const pref = prefs[dish.id]
+  const allergens = [...dishAllergens(dish)]
+  const ironWarning = people.some((p) => p.profile.ironDeficient) && hasDairy(dish) && (dish.iron_mg >= 4 || isDairyMain(dish))
 
   return (
     <Sheet
@@ -69,6 +73,16 @@ export function RecipeSheet({ dish, slot, onClose, onSwap }: { dish: Dish; slot:
           <IconClock size={14} /> {dish.time_min} min
         </span>
       </div>
+      {allergens.length > 0 && (
+        <div className="chips">
+          {allergens.map((a) => (
+            <span key={a} className="chip chip-allergen">
+              Contains {ALLERGENS.find((x) => x.id === a)?.label.toLowerCase()}
+            </span>
+          ))}
+        </div>
+      )}
+      {ironWarning && <div className="banner iron-banner">Iron note: someone here is iron deficient. Serve the curd, raita or paneer as a separate snack an hour later, not with this plate, so the iron is absorbed.</div>}
       {!isEveryday(dish) && <div className="faint xs">Occasional dish: not planned automatically on weekdays. {settings.adventurous ? 'May appear on weekends.' : 'Only appears when you choose it.'}</div>}
 
       <section className="card">
@@ -129,6 +143,8 @@ export function RecipeSheet({ dish, slot, onClose, onSwap }: { dish: Dish; slot:
         <ul className="list ingredients" style={{ marginTop: 8 }}>
           {dish.ingredients.map((ing, i) => {
             const de = region === 'DE' ? germanName(ing.name) : undefined
+            const sub = substituteFor(ing.name)
+            const subText = region === 'IN' ? [sub?.town && `In town: ${sub.town}`, sub?.village && `Village: ${sub.village}`].filter(Boolean).join(' · ') : sub?.germany ? `In Germany: ${sub.germany}` : sub?.town ? `Elsewhere: ${sub.town}` : ''
             return (
               <li key={i}>
                 <span className="ing-qty">{fmtIng(ing.qty * mult, ing.unit)}</span>
@@ -136,6 +152,12 @@ export function RecipeSheet({ dish, slot, onClose, onSwap }: { dish: Dish; slot:
                   {ing.name}
                   {ing.note && (region === 'DE' || !/aldi|rewe|lidl|edeka/i.test(ing.note)) && <em> · {ing.note}</em>}
                   {de && <div className="ing-de">{de}</div>}
+                  {subText && (
+                    <div className="ing-sub">
+                      ↳ {subText}
+                      {sub?.why ? ` (${sub.why})` : ''}
+                    </div>
+                  )}
                 </span>
               </li>
             )

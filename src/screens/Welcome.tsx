@@ -39,6 +39,7 @@ export function Welcome() {
     <div className="welcome">
       <div className="welcome-hero">
         <img src="./icons/icon.svg" alt="" width={72} height={72} />
+        <div className="eyebrow">Platora</div>
         <h1 className="h1">Virundhu</h1>
         <p className="muted">Simple South Indian home food, planned for everyone at your table, with the protein, iron and fibre you need to lose weight well.</p>
       </div>

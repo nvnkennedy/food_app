@@ -14,6 +14,8 @@ export interface Profile {
   weightKg: number
   goalWeightKg: number
   activity: Activity
+  /** diagnosed or suspected iron deficiency: dairy is kept away from iron-rich plates, high-iron dishes favoured */
+  ironDeficient?: boolean
 }
 
 /** Daily targets. kcal/protein for fat loss (adults), the rest are reference intakes (DGE / NIH). */

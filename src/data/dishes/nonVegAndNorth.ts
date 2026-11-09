@@ -33,7 +33,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 45,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['leftover-friendly', 'batch-cook', 'high-protein', 'everyday'],
+    tags: ['leftover-friendly', 'batch-cook', 'high-protein', 'everyday', 'tamil'],
     ingredients: [
       { name: 'chicken thigh', qty: 140, unit: 'g', note: 'skinless, bone-in or boneless; Aldi: Hähnchen-Oberkeule ohne Knochen' },
       { name: 'sona masoori rice', qty: 60, unit: 'g' },
@@ -90,7 +90,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 50,
     effort: 'medium',
     kidFriendly: false,
-    tags: ['leftover-friendly', 'weekend', 'high-protein', 'high-iron', 'high-fiber', 'everyday'],
+    tags: ['leftover-friendly', 'weekend', 'high-protein', 'high-iron', 'high-fiber', 'everyday', 'tamil'],
     ingredients: [
       { name: 'chicken thigh', qty: 150, unit: 'g', note: 'skinless; Aldi: Hähnchen-Oberkeule ohne Knochen' },
       { name: 'atta', qty: 60, unit: 'g', note: '2 chapatis' },
@@ -146,7 +146,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 40,
     effort: 'medium',
     kidFriendly: false,
-    tags: ['leftover-friendly', 'high-protein', 'everyday'],
+    tags: ['leftover-friendly', 'high-protein', 'everyday', 'tamil', 'warming'],
     ingredients: [
       { name: 'chicken breast', qty: 150, unit: 'g', note: 'cubed; Aldi: Hähnchenbrustfilet (Meine Metzgerei)' },
       { name: 'sona masoori rice', qty: 60, unit: 'g' },
@@ -204,7 +204,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 35,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['low-carb', 'quick', 'high-protein'],
+    tags: ['low-carb', 'quick', 'high-protein', 'tamil'],
     ingredients: [
       { name: 'chicken breast', qty: 160, unit: 'g', note: 'bite-size pieces; Aldi: Hähnchenbrustfilet (Meine Metzgerei)' },
       { name: 'atta', qty: 30, unit: 'g', note: '1 chapati' },
@@ -261,7 +261,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 45,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['leftover-friendly', 'high-protein', 'high-iron', 'everyday'],
+    tags: ['leftover-friendly', 'high-protein', 'high-iron', 'everyday', 'tamil'],
     ingredients: [
       { name: 'chicken thigh', qty: 150, unit: 'g', note: 'skinless boneless; Aldi: Hähnchen-Oberkeule ohne Knochen' },
       { name: 'atta', qty: 60, unit: 'g', note: '2 chapatis' },
@@ -314,7 +314,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 50,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['weekend', 'comfort', 'one-pot', 'high-protein', 'feast', 'everyday'],
+    tags: ['weekend', 'comfort', 'one-pot', 'high-protein', 'feast', 'everyday', 'kerala', 'warming'],
     ingredients: [
       { name: 'chicken thigh', qty: 140, unit: 'g', note: 'skinless, bone-in; Aldi: Hähnchen-Oberkeule ohne Knochen' },
       { name: 'appam flour', qty: 60, unit: 'g', note: '2 appams; or ready appam batter' },
@@ -369,7 +369,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 50,
     effort: 'medium',
     kidFriendly: false,
-    tags: ['leftover-friendly', 'batch-cook', 'high-protein'],
+    tags: ['leftover-friendly', 'batch-cook', 'high-protein', 'andhra'],
     ingredients: [
       { name: 'chicken thigh', qty: 150, unit: 'g', note: 'skinless; Aldi: Hähnchen-Oberkeule ohne Knochen' },
       { name: 'brown rice', qty: 60, unit: 'g' },
@@ -422,7 +422,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 35,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'leftover-friendly', 'high-protein', 'high-iron', 'high-fiber', 'everyday'],
+    tags: ['quick', 'leftover-friendly', 'high-protein', 'high-iron', 'high-fiber', 'everyday', 'tamil'],
     ingredients: [
       { name: 'chicken mince', qty: 150, unit: 'g', note: 'Aldi: Geflügelhack' },
       { name: 'atta', qty: 60, unit: 'g', note: '2 chapatis' },
@@ -476,7 +476,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 60,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['weekend', 'one-pot', 'leftover-friendly', 'high-protein', 'feast', 'everyday'],
+    tags: ['weekend', 'one-pot', 'leftover-friendly', 'high-protein', 'feast', 'everyday', 'tamil'],
     ingredients: [
       { name: 'chicken thigh', qty: 150, unit: 'g', note: 'skinless, bone-in; Aldi: Hähnchen-Oberkeule ohne Knochen' },
       { name: 'brown rice', qty: 65, unit: 'g', note: 'brown basmati, soaked 30 min' },
@@ -537,7 +537,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 40,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['leftover-friendly', 'high-protein', 'everyday'],
+    tags: ['leftover-friendly', 'high-protein', 'everyday', 'tamil'],
     ingredients: [
       { name: 'king fish', qty: 150, unit: 'g', note: 'steaks; from the Indian store; or Makrele from Aldi' },
       { name: 'sona masoori rice', qty: 60, unit: 'g' },
@@ -592,7 +592,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 35,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'high-protein', 'everyday'],
+    tags: ['quick', 'high-protein', 'everyday', 'tamil', 'warming'],
     ingredients: [
       { name: 'mackerel', qty: 160, unit: 'g', note: '1 medium fish, cleaned; or sardines / pomfret; Asian store fresh; Aldi Räuchermakrele as backup' },
       { name: 'sona masoori rice', qty: 60, unit: 'g' },
@@ -649,7 +649,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 40,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['high-protein'],
+    tags: ['high-protein', 'kerala'],
     ingredients: [
       { name: 'cod', qty: 150, unit: 'g', note: 'or pangasius / any firm white fish; Aldi: Kabeljaufilet TK (Almare) or Seelachs' },
       { name: 'red rice', qty: 60, unit: 'g', note: 'Kerala matta; soak 1 hour' },
@@ -706,7 +706,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 35,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['comfort', 'quick', 'high-protein', 'everyday'],
+    tags: ['comfort', 'quick', 'high-protein', 'everyday', 'kerala'],
     ingredients: [
       { name: 'pangasius', qty: 150, unit: 'g', note: 'or cod / frozen fish fillet; Aldi: Pangasiusfilet TK (Almare)' },
       { name: 'sona masoori rice', qty: 60, unit: 'g' },
@@ -761,7 +761,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 40,
     effort: 'medium',
     kidFriendly: false,
-    tags: ['leftover-friendly', 'high-protein'],
+    tags: ['leftover-friendly', 'high-protein', 'andhra'],
     ingredients: [
       { name: 'tilapia', qty: 150, unit: 'g', note: 'or frozen fish fillet / pangasius; Asian store TK; Aldi Seelachs works too' },
       { name: 'sona masoori rice', qty: 60, unit: 'g' },
@@ -817,7 +817,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 25,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'oven', 'high-protein'],
+    tags: ['quick', 'oven', 'high-protein', 'tamil'],
     ingredients: [
       { name: 'salmon', qty: 130, unit: 'g', note: 'fillet, skin on; Aldi: Lachsfilet TK (Almare)' },
       { name: 'brown rice', qty: 45, unit: 'g' },
@@ -870,7 +870,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'high-protein', 'everyday'],
+    tags: ['quick', 'high-protein', 'everyday', 'tamil'],
     ingredients: [
       { name: 'frozen prawns', qty: 150, unit: 'g', note: 'peeled, thawed; Aldi: Garnelen TK, roh geschält (Almare)' },
       { name: 'atta', qty: 60, unit: 'g', note: '2 chapatis' },
@@ -923,7 +923,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 35,
     effort: 'medium',
     kidFriendly: false,
-    tags: ['leftover-friendly', 'high-protein', 'everyday'],
+    tags: ['leftover-friendly', 'high-protein', 'everyday', 'tamil'],
     ingredients: [
       { name: 'frozen prawns', qty: 150, unit: 'g', note: 'peeled; Aldi: Garnelen TK, roh geschält (Almare)' },
       { name: 'brown rice', qty: 60, unit: 'g', note: 'soaked 30 min' },
@@ -979,7 +979,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: false,
-    tags: ['quick', 'high-protein', 'everyday'],
+    tags: ['quick', 'high-protein', 'everyday', 'tamil', 'warming'],
     ingredients: [
       { name: 'frozen prawns', qty: 150, unit: 'g', note: 'peeled; Aldi: Garnelen TK, roh geschält (Almare)' },
       { name: 'sona masoori rice', qty: 60, unit: 'g' },
@@ -1037,7 +1037,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 35,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['leftover-friendly', 'comfort', 'batch-cook', 'high-fiber', 'everyday'],
+    tags: ['leftover-friendly', 'comfort', 'batch-cook', 'high-fiber', 'everyday', 'tamil'],
     ingredients: [
       { name: 'eggs', qty: 2, unit: 'pc', note: 'Aldi: Eier 10er Pack' },
       { name: 'brown rice', qty: 60, unit: 'g', note: 'soaked 30 min' },
@@ -1095,7 +1095,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'comfort', 'everyday'],
+    tags: ['quick', 'comfort', 'everyday', 'tamil', 'warming'],
     ingredients: [
       { name: 'eggs', qty: 2, unit: 'pc', note: 'Aldi: Eier 10er Pack' },
       { name: 'sona masoori rice', qty: 60, unit: 'g' },
@@ -1154,7 +1154,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 25,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'everyday'],
+    tags: ['quick', 'everyday', 'tamil'],
     ingredients: [
       { name: 'dosa batter', qty: 180, unit: 'ml', note: '2 dosas' },
       { name: 'eggs', qty: 2, unit: 'pc', note: 'Aldi: Eier 10er Pack' },
@@ -1204,7 +1204,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['quick', 'one-pot', 'leftover-friendly', 'high-iron', 'high-fiber', 'everyday'],
+    tags: ['quick', 'one-pot', 'leftover-friendly', 'high-iron', 'high-fiber', 'everyday', 'tamil'],
     ingredients: [
       { name: 'atta', qty: 60, unit: 'g', note: '2 chapatis, leftover ones are perfect' },
       { name: 'eggs', qty: 2, unit: 'pc', note: 'Aldi: Eier 10er Pack' },
@@ -1260,7 +1260,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 70,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['weekend', 'leftover-friendly', 'high-protein', 'high-zinc', 'feast', 'everyday'],
+    tags: ['weekend', 'leftover-friendly', 'high-protein', 'high-zinc', 'feast', 'everyday', 'tamil'],
     ingredients: [
       { name: 'lamb', qty: 140, unit: 'g', note: 'lean, bone-in, trimmed of fat; Lammfleisch: Turkish/Indian butcher; Aldi Lammkeule seasonally' },
       { name: 'sona masoori rice', qty: 60, unit: 'g' },
@@ -1319,7 +1319,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 65,
     effort: 'medium',
     kidFriendly: false,
-    tags: ['weekend', 'high-protein', 'high-iron', 'high-zinc', 'feast', 'everyday'],
+    tags: ['weekend', 'high-protein', 'high-iron', 'high-zinc', 'feast', 'everyday', 'tamil'],
     ingredients: [
       { name: 'lamb', qty: 150, unit: 'g', note: 'lean boneless, cubed; Lammfleisch: Turkish/Indian butcher; Aldi Lammkeule seasonally' },
       { name: 'atta', qty: 60, unit: 'g', note: '2 chapatis' },
@@ -1938,7 +1938,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 30,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['comfort', 'one-pot', 'quick', 'leftover-friendly', 'high-fiber', 'everyday'],
+    tags: ['comfort', 'one-pot', 'quick', 'leftover-friendly', 'high-fiber', 'everyday', 'warming'],
     ingredients: [
       { name: 'moong dal', qty: 35, unit: 'g' },
       { name: 'brown rice', qty: 45, unit: 'g', note: 'or sona masoori for a softer khichdi' },
@@ -1991,7 +1991,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 40,
     effort: 'easy',
     kidFriendly: true,
-    tags: ['leftover-friendly', 'one-pot', 'high-iron', 'high-fiber'],
+    tags: ['leftover-friendly', 'one-pot', 'high-iron', 'high-fiber', 'warming'],
     ingredients: [
       { name: 'chana dal', qty: 40, unit: 'g', note: 'soaked 1 hour' },
       { name: 'bottle gourd', qty: 200, unit: 'g', note: 'lauki, peeled and diced; zucchini works too' },

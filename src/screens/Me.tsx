@@ -5,6 +5,7 @@ import { WeightChart } from '../components/WeightChart'
 import { IconPlus, IconShare, IconTrash } from '../components/Icons'
 import { todayISO } from '../lib/dates'
 import { CURRENCY, type Region } from '../data/prices'
+import { ALLERGENS, CUISINE_KEYS, DIETS, type Allergen, type CuisineKey, type Diet } from '../lib/dietary'
 
 export function Me() {
   const { setProfiles, people, weights, logWeight, removeWeight, clearOverrides, overrides, settings, setSettings, setupLink, prefs, setPref, byId } = useFamily()
@@ -91,6 +92,18 @@ export function Me() {
               )}
             </div>
 
+            {!isChild && (
+              <label className="setting" style={{ padding: '2px 0 0', border: 0 }}>
+                <div>
+                  <div className="t">Iron deficient</div>
+                  <div className="s">Keeps curd and paneer away from iron-rich plates, favours high-iron dishes, and warns in recipes.</div>
+                </div>
+                <span className="switch">
+                  <input type="checkbox" checked={!!p.ironDeficient} onChange={(e) => update(p.id, { ironDeficient: e.target.checked })} />
+                  <span />
+                </span>
+              </label>
+            )}
             {isChild ? (
               <div className="tiles">
                 <div className="tile accent">
@@ -187,6 +200,53 @@ export function Me() {
 
       <section className="card">
         <div className="card-title">Food preferences</div>
+        <div className="setting" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 8 }}>
+          <div className="t">Diet</div>
+          <div className="filter-row">
+            {DIETS.map((d) => (
+              <button key={d.id} className={'pill' + (settings.diet === d.id ? ' active' : '')} onClick={() => setSettings({ diet: d.id as Diet })} title={d.desc}>
+                {d.label}
+              </button>
+            ))}
+          </div>
+          <div className="s">{DIETS.find((d) => d.id === settings.diet)?.desc}</div>
+        </div>
+        <div className="setting" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 8 }}>
+          <div className="t">Allergies &amp; intolerances</div>
+          <div className="filter-row">
+            {ALLERGENS.map((a) => {
+              const on = settings.allergens.includes(a.id)
+              return (
+                <button key={a.id} className={'pill' + (on ? ' active' : '')} onClick={() => setSettings({ allergens: on ? settings.allergens.filter((x) => x !== a.id) : [...settings.allergens, a.id as Allergen] })} title={a.examples}>
+                  {on ? '✕ ' : ''}
+                  {a.label}
+                </button>
+              )
+            })}
+          </div>
+          <div className="s">{settings.allergens.length ? `Dishes containing ${settings.allergens.map((x) => ALLERGENS.find((a) => a.id === x)?.label.toLowerCase()).join(', ')} are never planned or offered.` : 'Nothing excluded. Tap to exclude dishes that contain an allergen.'}</div>
+        </div>
+        <div className="setting" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 8 }}>
+          <div className="t">Cuisines</div>
+          <div className="filter-row">
+            {CUISINE_KEYS.map((c) => {
+              const on = settings.cuisines.includes(c.id)
+              return (
+                <button
+                  key={c.id}
+                  className={'pill' + (on ? ' active' : '')}
+                  onClick={() => {
+                    const next = on ? settings.cuisines.filter((x) => x !== c.id) : [...settings.cuisines, c.id as CuisineKey]
+                    if (next.length) setSettings({ cuisines: next })
+                  }}
+                >
+                  {c.label}
+                </button>
+              )
+            })}
+          </div>
+          <div className="s">Tamil leads whenever it is selected; the others share the remaining days, North Indian, Italian and German more on weekends. Pick only one to eat just that.</div>
+        </div>
         <div className="setting">
           <div className="grow">
             <div className="t">Occasional dishes on weekends</div>
@@ -312,7 +372,9 @@ export function Me() {
         <div className="card-title">How the plan works</div>
         <ul className="bullets">
           <li>Only familiar everyday dishes are planned: idli, dosa, upma, pongal, sambar, rasam, kootu, poriyal, kuzhambu, curd rice, chicken and fish curries, egg curry. Less familiar dishes are marked "Occasional" and appear only if you pick them, or on weekends if you switch that on.</li>
-          <li>Weekdays are South Indian home food. North Indian plates and light soups or salads can appear only on weekends, as extras.</li>
+          <li>You choose the cuisines (Tamil, Kerala, Karnataka, Andhra, North Indian, Italian, German), the diet (non-veg to Jain) and allergens to exclude. The plan only uses what fits.</li>
+          <li>Seasons matter: in winter no cold dishes and curd only now and then, hot rasam, kootu and kanji more often; in summer cooling plates like curd rice and buttermilk.</li>
+          <li>If someone is iron deficient, dairy is kept away from iron-rich plates and high-iron dishes come up more often.</li>
           <li>One feast a month, on the second Sunday: biryani or a celebration plate, and lamb in every second month. Add your own feast days (birthdays, festivals) from the Today screen.</li>
           <li>The week is planned to fit your grocery budget: the most expensive meals are replaced with cheaper familiar ones, keeping the same protein where possible.</li>
           <li>Each week: chicken 3×, fish 2×, egg 3×, the rest dal and vegetables. Prawns every second week.</li>
@@ -337,7 +399,7 @@ export function Me() {
           </li>
         </ul>
         <div className="faint xs" style={{ marginTop: 10 }}>
-          Works offline after the first open · Virundhu v{__APP_VERSION__}
+          Works offline after the first open · Platora (Virundhu) v{__APP_VERSION__}
         </div>
       </section>
     </>

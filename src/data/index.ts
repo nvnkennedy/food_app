@@ -2,6 +2,7 @@ import type { Dish } from './types'
 import { SOUTH_VEG } from './dishes/southVeg'
 import { NONVEG_AND_NORTH } from './dishes/nonVegAndNorth'
 import { LIGHT_NORTH_BF } from './dishes/lightNorthBreakfast'
+import { EUROPE } from './dishes/europe'
 
 function dedupe(list: Dish[]): Dish[] {
   const seen = new Set<string>()
@@ -17,7 +18,7 @@ function dedupe(list: Dish[]): Dish[] {
   return out
 }
 
-export const DISHES: Dish[] = dedupe([...SOUTH_VEG, ...NONVEG_AND_NORTH, ...LIGHT_NORTH_BF])
+export const DISHES: Dish[] = dedupe([...SOUTH_VEG, ...NONVEG_AND_NORTH, ...LIGHT_NORTH_BF, ...EUROPE])
 
 export const DISH_BY_ID: Map<string, Dish> = new Map(DISHES.map((d) => [d.id, d]))
 

@@ -2218,3 +2218,26 @@ select.input {
   background: var(--surface-3);
   border-radius: 3px;
 }
+
+/* ---------- dietary ---------- */
+.chip-allergen {
+  background: #fef3c7;
+  color: #92400e;
+}
+:root[data-theme='dark'] .chip-allergen {
+  background: #3a2e0b;
+  color: #fde68a;
+}
+.iron-banner {
+  background: #fee2e2;
+  color: #991b1b;
+}
+:root[data-theme='dark'] .iron-banner {
+  background: #4a1515;
+  color: #fecaca;
+}
+.ing-sub {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 2px;
+}

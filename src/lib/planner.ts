@@ -3,6 +3,7 @@ import { costOf, type Region } from '../data/prices'
 import { PANTRY } from '../data/pantry'
 import { rngFor } from './rng'
 import { daysInMonth, isWeekend, toISO, fromISO, weekStart, type ISODate } from './dates'
+import { cuisineKeyOf, DEFAULT_CUISINES, dietAllows, dishAllergens, hasDairy, isCold, isCooling, isDairyMain, isWarming, seasonOf, type Allergen, type CuisineKey, type Diet, type Season } from './dietary'
 
 export type Meals = Record<Slot, string> // dish id per slot
 export interface DayPlan {
@@ -20,19 +21,27 @@ export interface PlanOptions {
   familyFactor: number
   /** extra feast days chosen by the family (birthdays, festivals) */
   feastDays: ISODate[]
+  diet: Diet
+  allergens: Allergen[]
+  cuisines: CuisineKey[]
+  /** someone in the family is iron deficient: keep dairy away from iron-rich plates, favour high-iron dishes */
+  ironDeficient: boolean
 }
-export const DEFAULT_PLAN_OPTIONS: PlanOptions = { adventurous: false, budget: 0, region: 'DE', familyFactor: 2.4, feastDays: [] }
+export const DEFAULT_PLAN_OPTIONS: PlanOptions = {
+  adventurous: false,
+  budget: 0,
+  region: 'DE',
+  familyFactor: 2.4,
+  feastDays: [],
+  diet: 'nonveg',
+  allergens: [],
+  cuisines: DEFAULT_CUISINES,
+  ironDeficient: false
+}
 
-const PLAN_VERSION = 'v5'
+const PLAN_VERSION = 'v6'
 const MAIN_SLOTS: ('lunch' | 'dinner')[] = ['lunch', 'dinner']
 const ALL_SLOTS: Slot[] = ['breakfast', 'snack', 'lunch', 'dinner']
-
-/**
- * Weekdays are South Indian everyday home food. North Indian plates and light soups/salads/bowls
- * are weekend extras only.
- */
-const WEEKDAY_WEIGHT: Record<Dish['cuisine'], number> = { south: 1.0, north: 0, light: 0 }
-const WEEKEND_WEIGHT: Record<Dish['cuisine'], number> = { south: 1.0, north: 0.45, light: 0.5 }
 
 /** Weekly non-veg rhythm for 14 main slots (lunch + dinner x 7). */
 const WEEK_PROTEINS: Protein[] = [
@@ -69,14 +78,42 @@ export function dishCost(d: Dish, region: Region, familyFactor: number): number 
   return c
 }
 
+/** Diet / allergen gate: can this family eat this dish at all? */
+export function eligible(d: Dish, opts: PlanOptions): boolean {
+  if (!dietAllows(d, opts.diet)) return false
+  if (opts.allergens.length) {
+    const a = dishAllergens(d)
+    if (opts.allergens.some((x) => a.has(x))) return false
+  }
+  return true
+}
+
+/** Map the protein rhythm onto what the diet allows. */
+function proteinFor(p: Protein, diet: Diet): Protein {
+  switch (diet) {
+    case 'nonveg':
+      return p
+    case 'pescatarian':
+      return p === 'chicken' || p === 'lamb' ? 'fish' : p
+    case 'eggetarian':
+      return p === 'veg' || p === 'egg' ? p : 'egg'
+    default:
+      return 'veg'
+  }
+}
+
 const cache = new Map<string, DayPlan[]>()
 
 export function monthKey(year: number, month0: number): string {
   return `${year}-${String(month0 + 1).padStart(2, '0')}`
 }
 
+function optsKey(o: PlanOptions): string {
+  return [o.adventurous ? 'a' : 's', o.budget, o.region, o.familyFactor, o.feastDays.join(','), o.diet, [...o.allergens].sort().join(','), [...o.cuisines].sort().join(','), o.ironDeficient ? 'fe' : ''].join('|')
+}
+
 export function generateMonth(year: number, month0: number, dishes: Dish[], opts: PlanOptions = DEFAULT_PLAN_OPTIONS): DayPlan[] {
-  const key = `${PLAN_VERSION}:${monthKey(year, month0)}:${dishes.length}:${opts.adventurous ? 'a' : 's'}:${opts.budget}:${opts.region}:${opts.familyFactor}:${opts.feastDays.join(',')}`
+  const key = `${PLAN_VERSION}:${monthKey(year, month0)}:${dishes.length}:${optsKey(opts)}`
   const hit = cache.get(key)
   if (hit) return hit
 
@@ -85,7 +122,11 @@ export function generateMonth(year: number, month0: number, dishes: Dish[], opts
   const dates: ISODate[] = Array.from({ length: n }, (_, i) => toISO(new Date(year, month0, i + 1)))
   const regularFeast = feastDayOf(year, month0)
   const feastSet = new Set<ISODate>([regularFeast, ...opts.feastDays.filter((d) => d.startsWith(monthKey(year, month0)))])
+  const season: Season = seasonOf(month0, opts.region)
+  const cuisines = new Set<CuisineKey>(opts.cuisines.length ? opts.cuisines : DEFAULT_CUISINES)
 
+  // dishes this family can eat at all
+  const pool0 = dishes.filter((d) => eligible(d, opts))
   const byId = new Map(dishes.map((d) => [d.id, d]))
   const lastUsed = new Map<string, number>() // dish id -> day index
   const usedCount = new Map<string, number>()
@@ -102,7 +143,7 @@ export function generateMonth(year: number, month0: number, dishes: Dish[], opts
       const vi = proteins.indexOf('veg')
       if (vi >= 0) proteins[vi] = 'prawn'
     }
-    proteins = rng.shuffle(proteins)
+    proteins = rng.shuffle(proteins).map((p) => proteinFor(p, opts.diet))
 
     // avoid the same non-veg protein at lunch and dinner on one day
     for (let pass = 0; pass < 3; pass++) {
@@ -130,12 +171,44 @@ export function generateMonth(year: number, month0: number, dishes: Dish[], opts
   }
 
   // ---------- 2. Pick dishes ----------
+  /** cuisine weight: the family's chosen cuisines; Tamil leads, other selections share the rest; light plates are weekend extras */
+  const cuisineWeight = (d: Dish, weekend: boolean): number => {
+    const k = cuisineKeyOf(d)
+    if (k === 'light') return weekend && opts.adventurous ? 0.5 : 0
+    if (!cuisines.has(k)) return 0
+    if (k === 'tamil') return 1.0
+    if (k === 'kerala' || k === 'karnataka' || k === 'andhra') return 0.6
+    return weekend ? 0.8 : 0.45 // north, italian, german: a few times a week, more on weekends
+  }
+
+  const seasonWeight = (d: Dish): number => {
+    let w = 1
+    if (season === 'winter') {
+      if (isCold(d)) return 0
+      if (isWarming(d)) w *= 1.4
+      if (isDairyMain(d)) w *= 0.4 // curd daily is not realistic in winter
+    } else if (season === 'summer') {
+      if (isCooling(d)) w *= 1.4
+      if (isWarming(d)) w *= 0.7
+    } else if (season === 'monsoon') {
+      if (isCold(d)) w *= 0.4
+      if (isWarming(d)) w *= 1.3
+    }
+    if (opts.ironDeficient) {
+      if (d.tags.includes('high-iron')) w *= 1.5
+      if (isDairyMain(d)) w *= 0.5
+      else if (hasDairy(d) && d.iron_mg >= 4) w *= 0.7 // dairy next to an iron-rich plate blocks absorption
+    }
+    return w
+  }
+
   const allowed = (d: Dish, weekend: boolean) => isEveryday(d) || (weekend && opts.adventurous)
 
-  const pickDish = (dayIdx: number, slot: Slot, filter: (d: Dish) => boolean, weight: (d: Dish) => number, minGapDays: number): Dish | undefined => {
+  const pickDish = (dayIdx: number, slot: Slot, filter: (d: Dish) => boolean, weight: (d: Dish) => number, minGapDays: number, relaxCuisine = false): Dish | undefined => {
     const weekend = isWeekend(dates[dayIdx])
-    let pool = dishes.filter((d) => d.slots.includes(slot) && !isFeast(d) && filter(d) && allowed(d, weekend))
+    let pool = pool0.filter((d) => d.slots.includes(slot) && !isFeast(d) && filter(d) && allowed(d, weekend))
     if (!weekend) pool = pool.filter((d) => !d.tags.includes('weekend')) // weekend specials stay on weekends
+    pool = pool.filter((d) => seasonWeight(d) > 0 && (relaxCuisine || cuisineWeight(d, weekend) > 0))
     const fresh = pool.filter((d) => {
       const last = lastUsed.get(d.id)
       return last == null || dayIdx - last >= minGapDays
@@ -143,7 +216,7 @@ export function generateMonth(year: number, month0: number, dishes: Dish[], opts
     const candidates = fresh.length ? fresh : pool
     if (!candidates.length) return undefined
     return rng.weighted(candidates, (d) => {
-      let w = weight(d)
+      let w = weight(d) * (relaxCuisine ? 1 : cuisineWeight(d, weekend)) * seasonWeight(d)
       w *= 1 / (1 + 2 * (usedCount.get(d.id) ?? 0)) // spread variety over the month
       if (!weekend && d.effort === 'medium') w *= 0.55
       if (weekend && d.tags.includes('weekend')) w *= 3
@@ -159,20 +232,16 @@ export function generateMonth(year: number, month0: number, dishes: Dish[], opts
     usedCount.set(dish.id, (usedCount.get(dish.id) ?? 0) + 1)
   }
 
-  const cuisineW = (dayIdx: number) => (d: Dish) => (isWeekend(dates[dayIdx]) ? WEEKEND_WEIGHT : WEEKDAY_WEIGHT)[d.cuisine] ?? 0
-
   const pickFeast = (date: ISODate, lambOk: boolean): Dish | undefined => {
-    const feasts = dishes.filter((d) => isFeast(d) && d.slots.includes('lunch') && (lambOk ? d.protein === 'lamb' : d.protein !== 'lamb'))
-    const pool = feasts.length ? feasts : dishes.filter((d) => isFeast(d) && d.slots.includes('lunch'))
+    const feasts = pool0.filter((d) => isFeast(d) && d.slots.includes('lunch') && (lambOk ? d.protein === 'lamb' : d.protein !== 'lamb'))
+    const pool = feasts.length ? feasts : pool0.filter((d) => isFeast(d) && d.slots.includes('lunch'))
     return pool.length ? rngFor(`feast-${date}`).pick(pool) : undefined
   }
 
   for (let i = 0; i < n; i++) {
-    const cw = cuisineW(i)
     for (const slot of MAIN_SLOTS) {
-      // Feast lunch: the regular monthly one (lamb in lamb months) and any day the family marked.
       if (slot === 'lunch' && feastSet.has(dates[i])) {
-        const dish = pickFeast(dates[i], dates[i] === regularFeast && isLambMonth(month0))
+        const dish = pickFeast(dates[i], dates[i] === regularFeast && isLambMonth(month0) && opts.diet === 'nonveg')
         if (dish) {
           plan[i].meals.lunch = dish.id
           mark(dish, i)
@@ -181,23 +250,29 @@ export function generateMonth(year: number, month0: number, dishes: Dish[], opts
       }
       const want = specs[i][slot]
       const dish =
-        pickDish(i, slot, (d) => d.protein === want, cw, 10) ??
-        pickDish(i, slot, (d) => d.protein === 'veg' || d.protein === 'egg', cw, 10) ??
-        pickDish(i, slot, (d) => d.cuisine === 'south', () => 1, 3)
+        pickDish(i, slot, (d) => d.protein === want, () => 1, 10) ??
+        pickDish(i, slot, (d) => d.protein === 'veg' || d.protein === 'egg', () => 1, 10) ??
+        pickDish(i, slot, () => true, () => 1, 3, true) ??
+        pool0.find((d) => d.slots.includes(slot) && !isFeast(d) && !(season === 'winter' && isCold(d))) ??
+        pool0.find((d) => d.slots.includes(slot) && !isFeast(d))
       if (dish) {
         plan[i].meals[slot] = dish.id
         mark(dish, i)
       }
     }
-    // Breakfast: South Indian tiffin on weekdays, about 2 egg breakfasts a week, never on a day that already has egg mains
-    const eggDay = rng.next() < 2 / 7 && specs[i].lunch !== 'egg' && specs[i].dinner !== 'egg'
-    const bf = pickDish(i, 'breakfast', (d) => (eggDay ? d.protein === 'egg' : d.protein !== 'egg'), (d) => Math.max(cw(d), d.protein === 'egg' ? 0.5 : 0), 6) ?? pickDish(i, 'breakfast', () => true, () => 1, 2)
+    // Breakfast: tiffin, about 2 egg breakfasts a week where the diet allows, never on a day that already has egg mains
+    const eggOk = opts.diet === 'nonveg' || opts.diet === 'pescatarian' || opts.diet === 'eggetarian'
+    const eggDay = eggOk && rng.next() < 2 / 7 && specs[i].lunch !== 'egg' && specs[i].dinner !== 'egg'
+    const bf =
+      pickDish(i, 'breakfast', (d) => (eggDay ? d.protein === 'egg' : d.protein !== 'egg'), (d) => (d.protein === 'egg' ? 0.8 : 1), 6) ??
+      pickDish(i, 'breakfast', () => true, () => 1, 2, true) ??
+      pool0.find((d) => d.slots.includes('breakfast'))
     if (bf) {
       plan[i].meals.breakfast = bf.id
       mark(bf, i)
     }
     // Snack: South Indian snacks preferred, kid friendly
-    const sn = pickDish(i, 'snack', () => true, (d) => (d.cuisine === 'south' ? 1 : 0.4) * (d.kidFriendly ? 1 : 0.5), 3) ?? pickDish(i, 'snack', () => true, () => 1, 0)
+    const sn = pickDish(i, 'snack', () => true, (d) => (d.cuisine === 'south' ? 1 : 0.4) * (d.kidFriendly ? 1 : 0.5), 3, true) ?? pickDish(i, 'snack', () => true, () => 1, 0, true) ?? pool0.find((d) => d.slots.includes('snack'))
     if (sn) {
       plan[i].meals.snack = sn.id
       mark(sn, i)
@@ -208,14 +283,14 @@ export function generateMonth(year: number, month0: number, dishes: Dish[], opts
   for (const day of plan) {
     for (const slot of ALL_SLOTS) {
       if (!day.meals[slot] || !byId.has(day.meals[slot])) {
-        const any = dishes.find((d) => d.slots.includes(slot) && !isFeast(d) && isEveryday(d)) ?? dishes.find((d) => d.slots.includes(slot))
+        const any = pool0.find((d) => d.slots.includes(slot) && !isFeast(d)) ?? dishes.find((d) => d.slots.includes(slot))
         if (any) day.meals[slot] = any.id
       }
     }
   }
 
   // ---------- 3. Fit each calendar week into the budget ----------
-  if (opts.budget > 0) fitBudget(plan, dishes, opts, feastSet)
+  if (opts.budget > 0) fitBudget(plan, pool0, opts, feastSet, season)
 
   cache.set(key, plan)
   return plan
@@ -226,7 +301,7 @@ export function generateMonth(year: number, month0: number, dishes: Dish[], opts
  * of the same kind until the week's estimated shopping cost is within the budget.
  * Feast lunches are kept. The week target is pro-rated when a week is cut by the month edge.
  */
-function fitBudget(plan: DayPlan[], dishes: Dish[], opts: PlanOptions, feastSet: Set<ISODate>) {
+function fitBudget(plan: DayPlan[], dishes: Dish[], opts: PlanOptions, feastSet: Set<ISODate>, season: Season) {
   const byId = new Map(dishes.map((d) => [d.id, d]))
   const costMemo = new Map<string, number>()
   const cost = (d: Dish) => {
@@ -237,8 +312,12 @@ function fitBudget(plan: DayPlan[], dishes: Dish[], opts: PlanOptions, feastSet:
     }
     return c
   }
+  const cuisines = new Set<CuisineKey>(opts.cuisines.length ? opts.cuisines : DEFAULT_CUISINES)
+  const cuisineOk = (d: Dish, weekend: boolean) => {
+    const k = cuisineKeyOf(d)
+    return k === 'light' ? weekend && opts.adventurous : cuisines.has(k)
+  }
 
-  // group month days by calendar week (Monday start)
   const weeks = new Map<ISODate, DayPlan[]>()
   for (const day of plan) {
     const ws = weekStart(day.date)
@@ -253,7 +332,6 @@ function fitBudget(plan: DayPlan[], dishes: Dish[], opts: PlanOptions, feastSet:
 
     const tried = new Set<string>()
     for (let iter = 0; iter < 40 && total() > target; iter++) {
-      // most expensive replaceable meal (mains first, then breakfast/snack)
       let best: { day: DayPlan; slot: Slot; dish: Dish } | null = null
       for (const day of days) {
         for (const slot of ALL_SLOTS) {
@@ -262,8 +340,8 @@ function fitBudget(plan: DayPlan[], dishes: Dish[], opts: PlanOptions, feastSet:
           if (slot === 'lunch' && feastSet.has(day.date)) continue
           const k = `${day.date}:${slot}`
           if (tried.has(k)) continue
-          const mainBoost = slot === 'lunch' || slot === 'dinner' ? 1 : 0.6
-          if (!best || cost(dish) * mainBoost > cost(best.dish) * (best.slot === 'lunch' || best.slot === 'dinner' ? 1 : 0.6)) best = { day, slot, dish }
+          const boost = (s: Slot) => (s === 'lunch' || s === 'dinner' ? 1 : 0.6)
+          if (!best || cost(dish) * boost(slot) > cost(best.dish) * boost(best.slot)) best = { day, slot, dish }
         }
       }
       if (!best) break
@@ -271,14 +349,22 @@ function fitBudget(plan: DayPlan[], dishes: Dish[], opts: PlanOptions, feastSet:
       tried.add(`${day.date}:${slot}`)
       const weekend = isWeekend(day.date)
       const inUse = used()
-      const base = dishes.filter((d) => d.slots.includes(slot) && !isFeast(d) && isEveryday(d) && !inUse.has(d.id) && (weekend || !d.tags.includes('weekend')) && (weekend || d.cuisine === 'south' || slot === 'breakfast' || slot === 'snack') && cost(d) < cost(dish) * 0.85)
-      // same protein first, then egg, then veg: keeps the protein rhythm as long as the budget allows
+      const base = dishes.filter(
+        (d) =>
+          d.slots.includes(slot) &&
+          !isFeast(d) &&
+          isEveryday(d) &&
+          !inUse.has(d.id) &&
+          (weekend || !d.tags.includes('weekend')) &&
+          cuisineOk(d, weekend) &&
+          !(season === 'winter' && isCold(d)) &&
+          cost(d) < cost(dish) * 0.85
+      )
       const tiers: ((d: Dish) => boolean)[] = [(d) => d.protein === dish.protein, (d) => d.protein === 'egg', (d) => d.protein === 'veg']
       let pick: Dish | undefined
       for (const tier of tiers) {
         const pool = base.filter(tier).sort((a, b) => cost(a) - cost(b) || a.name.localeCompare(b.name))
         if (pool.length) {
-          // cheapest third, deterministic choice so both phones agree
           const third = pool.slice(0, Math.max(1, Math.ceil(pool.length / 3)))
           pick = rngFor(`budget-${day.date}-${slot}`).pick(third)
           break
@@ -322,7 +408,7 @@ export function mealsFor(date: ISODate, dishes: Dish[], overrides: Overrides, op
  * Replace disliked dishes with a deterministic familiar alternative of the same slot and protein.
  * Returns the slots that were replaced so the UI can mark them.
  */
-export function applyDislikes(date: ISODate, meals: Meals, dishes: Dish[], disliked: Set<string>, overrides: Partial<Meals> = {}): { meals: Meals; replaced: Slot[] } {
+export function applyDislikes(date: ISODate, meals: Meals, dishes: Dish[], disliked: Set<string>, overrides: Partial<Meals> = {}, opts: PlanOptions = DEFAULT_PLAN_OPTIONS): { meals: Meals; replaced: Slot[] } {
   const out: Meals = { ...meals }
   const replaced: Slot[] = []
   const byId = new Map(dishes.map((d) => [d.id, d]))
@@ -330,7 +416,7 @@ export function applyDislikes(date: ISODate, meals: Meals, dishes: Dish[], disli
     const id = meals[slot]
     if (!disliked.has(id) || overrides[slot]) continue
     const cur = byId.get(id)
-    const pool = dishes.filter((d) => d.slots.includes(slot) && !disliked.has(d.id) && !isFeast(d) && isEveryday(d) && (!cur || d.protein === cur.protein) && !Object.values(out).includes(d.id))
+    const pool = dishes.filter((d) => d.slots.includes(slot) && !disliked.has(d.id) && !isFeast(d) && isEveryday(d) && eligible(d, opts) && (!cur || d.protein === cur.protein) && !Object.values(out).includes(d.id))
     const alt = pool.length ? rngFor(`dislike-${date}-${slot}`).pick(pool) : undefined
     if (alt) {
       out[slot] = alt.id
@@ -365,9 +451,10 @@ export function monthStats(plan: DayPlan[], byId: Map<string, Dish>) {
 /** Estimated shopping cost for the given days (pantry excluded). */
 export function daysCost(days: DayPlan[], byId: Map<string, Dish>, region: Region, familyFactor: number): number {
   let c = 0
-  for (const day of days) for (const slot of ALL_SLOTS) {
-    const d = byId.get(day.meals[slot])
-    if (d) c += dishCost(d, region, familyFactor)
-  }
+  for (const day of days)
+    for (const slot of ALL_SLOTS) {
+      const d = byId.get(day.meals[slot])
+      if (d) c += dishCost(d, region, familyFactor)
+    }
   return c
 }

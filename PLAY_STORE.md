@@ -1,4 +1,6 @@
-# Publishing Virundhu on Google Play
+# Publishing Platora (Virundhu) on Google Play
+
+Store name: **Platora** (international, coined). Inside the app the planner is called **Virundhu**.
 
 ## What is already prepared
 
@@ -23,7 +25,7 @@ Set `JAVA_HOME` to Android Studio's JDK (`C:\Program Files\Android\Android Studi
 
 ## Play Console steps (one time)
 
-1. https://play.google.com/console → **Create app**. Name "Virundhu", default language English, App, Free.
+1. https://play.google.com/console → **Create app**. Name "Platora", default language English, App, Free.
 2. **Set up your app** checklist in the dashboard:
    - Privacy policy: paste the URL above.
    - App access: "All functionality is available without special access".
@@ -40,16 +42,16 @@ Set `JAVA_HOME` to Android Studio's JDK (`C:\Program Files\Android\Android Studi
 ## Store listing text (draft)
 
 **Short description**
-South Indian family meal planner: daily plan, portions per person, protein and iron, budget.
+Family meal planner for Indian home food: portions per person, nutrition, budget, allergies.
 
 **Full description**
-Virundhu plans simple South Indian home food for the whole family: idli, dosa, upma, sambar rice, rasam,
+Platora (Virundhu inside) plans simple South Indian home food for the whole family: idli, dosa, upma, sambar rice, rasam,
 kootu, poriyal, chicken and fish kuzhambu, egg curry, and more. Every day shows breakfast, snack, lunch and
 dinner with each person's plate in real measures ("2 idlis, sambar 200 ml"), full nutrition (calories, protein,
 fibre, iron, zinc, magnesium) against personal targets, how to absorb more from each plate, and the estimated cost.
 Weekly grocery list that fits the budget you set, grouped by supermarket and Indian store with German names in
 Germany or one list with rupee prices in India. One feast a month, your own feast days, favourites, "not for us",
-eaten tracking, tonight-for-tomorrow prep reminders. No account, no ads, everything stays on your phone.
+eaten tracking, tonight-for-tomorrow prep reminders. Choose your cuisines (Tamil, Kerala, Karnataka, Andhra, North Indian, Italian, German), your diet (non-veg, pescatarian, eggetarian, vegetarian, vegan, Jain) and allergens to exclude; the plan follows the season and keeps dairy away from iron-rich plates for iron-deficient members. Ingredient substitutes for Indian towns and villages. No account, no ads, everything stays on your phone.
 
 ## Updating later
 

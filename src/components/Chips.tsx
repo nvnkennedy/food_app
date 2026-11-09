@@ -3,7 +3,9 @@ import type { Dish, Slot } from '../data/types'
 export const CUISINE_LABEL: Record<Dish['cuisine'], string> = {
   south: 'South Indian',
   north: 'North Indian',
-  light: 'Light'
+  light: 'Light',
+  italian: 'Italian',
+  german: 'German'
 }
 
 export const PROTEIN_LABEL: Record<Dish['protein'], string> = {
@@ -17,6 +19,8 @@ export const PROTEIN_LABEL: Record<Dish['protein'], string> = {
 
 /** A friendly illustration for a dish, used on cards. */
 export function dishEmoji(dish: Dish, slot?: Slot): string {
+  if (dish.cuisine === 'italian') return dish.name.toLowerCase().includes('soup') || dish.name.toLowerCase().includes('minestrone') ? '🍲' : '🍝'
+  if (dish.cuisine === 'german') return /suppe|soup/.test(dish.name.toLowerCase()) ? '🍲' : /brot|bread/.test(dish.name.toLowerCase()) ? '🥖' : '🥔'
   switch (dish.protein) {
     case 'chicken':
       return '🍗'

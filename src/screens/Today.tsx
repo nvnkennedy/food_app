@@ -10,6 +10,7 @@ import { SLOT_ORDER } from '../lib/nutrition'
 import { addDays, fmtDow, fmtDayNum, fromISO, isWeekend, todayISO, weekStart, type ISODate } from '../lib/dates'
 import { isRegularFeastDay, isLambMonth, isFeast } from '../lib/planner'
 import { prepFor } from '../lib/prep'
+import { seasonOf, seasonNote } from '../lib/dietary'
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const DOWS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -44,6 +45,7 @@ export function Today({ date, setDate, goToFamily }: { date: ISODate; setDate: (
   const dark = typeof document !== 'undefined' && document.documentElement.dataset.theme === 'dark'
 
   const tomorrow = dayOn(addDays(date, 1)).meals
+  const season = seasonNote(seasonOf(d.getMonth(), settings.region), settings.region)
   const prep = prepFor(SLOT_ORDER.map((s) => byId.get(tomorrow[s])).filter((x): x is Dish => !!x))
 
   return (
@@ -83,6 +85,7 @@ export function Today({ date, setDate, goToFamily }: { date: ISODate; setDate: (
         ))}
       </div>
 
+      {season && fmtDayNum(date) === 1 && <div className="faint xs" style={{ padding: '0 4px' }}>{season}</div>}
       {feast && (
         <div className="banner feast-banner row-between">
           <span>
