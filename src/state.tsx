@@ -33,9 +33,11 @@ export interface Settings {
   onboarded: boolean
   /** also offer occasional (less familiar) dishes on weekends */
   adventurous: boolean
+  /** extra feast days chosen by the family */
+  feastDays: ISODate[]
 }
 
-const DEFAULT_SETTINGS: Settings = { region: 'DE', weeklyBudget: 0, theme: 'light', onboarded: false, adventurous: false }
+const DEFAULT_SETTINGS: Settings = { region: 'DE', weeklyBudget: 0, theme: 'light', onboarded: false, adventurous: false, feastDays: [] }
 
 /** What a day looks like after swaps and dislikes. */
 export interface DayMeals {
@@ -58,6 +60,8 @@ interface FamilyState {
   familyFactor: number
   settings: Settings
   setSettings: (patch: Partial<Settings>) => void
+  toggleTheme: () => void
+  toggleFeastDay: (date: ISODate) => void
   planOptions: PlanOptions
   overrides: Overrides
   setOverride: (date: ISODate, slot: Slot, dishId: string | null) => void
@@ -122,7 +126,7 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
   const [prefs, setPrefs] = useStored<Record<string, Pref>>('prefs', {})
   const [eaten, setEatenRaw] = useStored<Eaten>('eaten', {})
   const [settingsRaw, setSettingsRaw] = useStored<Settings>('settings', { ...DEFAULT_SETTINGS, theme: loadJSON<Theme>('theme', 'light'), onboarded: loadJSON<Profile[]>('profiles', []).length > 0 })
-  const settings = useMemo<Settings>(() => ({ ...DEFAULT_SETTINGS, ...settingsRaw }), [settingsRaw])
+  const settings = useMemo<Settings>(() => ({ ...DEFAULT_SETTINGS, ...settingsRaw, feastDays: settingsRaw.feastDays ?? [] }), [settingsRaw])
 
   const profiles = useMemo(() => migrateProfiles(rawProfiles), [rawProfiles])
 
@@ -143,13 +147,18 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
     return Math.round(sum * 100) / 100
   }, [people])
 
-  const planOptions = useMemo<PlanOptions>(() => ({ adventurous: settings.adventurous }), [settings.adventurous])
+  const planOptions = useMemo<PlanOptions>(
+    () => ({ adventurous: settings.adventurous, budget: settings.weeklyBudget, region: settings.region, familyFactor, feastDays: [...settings.feastDays].sort() }),
+    [settings.adventurous, settings.weeklyBudget, settings.region, settings.feastDays, familyFactor]
+  )
   const disliked = useMemo(() => new Set(Object.keys(prefs).filter((k) => prefs[k] === 'dislike')), [prefs])
 
   const dayOn = (date: ISODate): DayMeals => {
     const base = mealsFor(date, DISHES, overrides, planOptions)
     return applyDislikes(date, base, DISHES, disliked, overrides[date] ?? {})
   }
+
+  const setSettings = (patch: Partial<Settings>) => setSettingsRaw((prev) => ({ ...DEFAULT_SETTINGS, ...prev, ...patch }))
 
   const value: FamilyState = {
     dishes: DISHES,
@@ -161,7 +170,12 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
     children: kids,
     familyFactor,
     settings,
-    setSettings: (patch) => setSettingsRaw((prev) => ({ ...DEFAULT_SETTINGS, ...prev, ...patch })),
+    setSettings,
+    toggleTheme: () => {
+      const dark = document.documentElement.dataset.theme === 'dark'
+      setSettings({ theme: dark ? 'light' : 'dark' })
+    },
+    toggleFeastDay: (date) => setSettings({ feastDays: settings.feastDays.includes(date) ? settings.feastDays.filter((d) => d !== date) : [...settings.feastDays, date].sort() }),
     planOptions,
     overrides,
     setOverride: (date, slot, dishId) =>
@@ -203,7 +217,11 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
     dayOn,
     portionFor: (dish, slot, person) => portionFactor(dish, person.profile, person.targets, slot),
     setupLink: () => {
-      const payload: SetupPayload = { v: 1, profiles, settings: { region: settings.region, weeklyBudget: settings.weeklyBudget, adventurous: settings.adventurous } }
+      const payload: SetupPayload = {
+        v: 1,
+        profiles,
+        settings: { region: settings.region, weeklyBudget: settings.weeklyBudget, adventurous: settings.adventurous, feastDays: settings.feastDays }
+      }
       const base = location.href.split('#')[0]
       return `${base}#setup=${encodeSetup(payload)}`
     },

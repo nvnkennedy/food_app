@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
-  appId: 'de.virundhu.app',
+  appId: 'com.virundhu.app',
   appName: 'Virundhu',
   webDir: 'dist',
   android: {

@@ -1,6 +1,7 @@
 import type { Dish, Unit } from '../data/types'
 import { storeFor } from '../data/ingredients'
 import type { Region } from '../data/prices'
+import { PANTRY } from '../data/pantry'
 import type { DayPlan } from './planner'
 
 /** german/indian for Berlin; market for India (one shop); pantry everywhere. */
@@ -15,19 +16,6 @@ export interface GroceryLine {
   dishes: string[]
   note?: string
 }
-
-/** Things almost every Indian kitchen already has; listed separately so the shopping list stays short. */
-const PANTRY = new Set([
-  'salt', 'water', 'oil', 'sunflower oil', 'rapeseed oil', 'olive oil', 'coconut oil', 'ghee', 'sugar',
-  'turmeric', 'red chilli powder', 'kashmiri chilli powder', 'coriander powder', 'cumin powder', 'cumin seeds',
-  'mustard seeds', 'fenugreek seeds', 'fennel seeds', 'black pepper', 'asafoetida', 'dried red chilli',
-  'garam masala', 'sambar powder', 'rasam powder', 'chicken masala', 'fish masala', 'biryani masala', 'chaat masala',
-  'chettinad masala', 'kitchen king masala', 'pav bhaji masala', 'curry powder', 'cardamom', 'cloves', 'cinnamon',
-  'bay leaf', 'star anise', 'kasuri methi', 'amchur', 'ajwain', 'black salt', 'tamarind', 'jaggery', 'ginger garlic paste',
-  'dried oregano', 'dried basil', 'italian herbs', 'chilli flakes', 'paprika powder', 'soy sauce', 'vinegar',
-  'white wine vinegar', 'cornflour', 'baking soda', 'eno', 'honey', 'urad dal', 'chana dal', 'roasted chana dal',
-  'vegetable stock', 'chicken stock', 'tomato paste', 'rice flour', 'desiccated coconut', 'sesame seeds'
-])
 
 /** Preferred unit per ingredient so the same thing is not listed twice (e.g. curry leaves in pcs and sprigs). */
 const CANON: Record<string, Unit> = {

@@ -1,6 +1,8 @@
 import type { Dish, Protein, Slot } from '../data/types'
+import { costOf, type Region } from '../data/prices'
+import { PANTRY } from '../data/pantry'
 import { rngFor } from './rng'
-import { daysInMonth, isWeekend, toISO, fromISO, type ISODate } from './dates'
+import { daysInMonth, isWeekend, toISO, fromISO, weekStart, type ISODate } from './dates'
 
 export type Meals = Record<Slot, string> // dish id per slot
 export interface DayPlan {
@@ -11,11 +13,19 @@ export interface DayPlan {
 export interface PlanOptions {
   /** false = only familiar everyday dishes (tag 'everyday'); true = also offer occasional dishes on weekends */
   adventurous: boolean
+  /** weekly grocery budget in the region's currency; 0 = no budget fitting */
+  budget: number
+  region: Region
+  /** sum of the family's portion shares, e.g. 1 + 0.85 + 0.6 */
+  familyFactor: number
+  /** extra feast days chosen by the family (birthdays, festivals) */
+  feastDays: ISODate[]
 }
-export const DEFAULT_PLAN_OPTIONS: PlanOptions = { adventurous: false }
+export const DEFAULT_PLAN_OPTIONS: PlanOptions = { adventurous: false, budget: 0, region: 'DE', familyFactor: 2.4, feastDays: [] }
 
-const PLAN_VERSION = 'v4'
+const PLAN_VERSION = 'v5'
 const MAIN_SLOTS: ('lunch' | 'dinner')[] = ['lunch', 'dinner']
+const ALL_SLOTS: Slot[] = ['breakfast', 'snack', 'lunch', 'dinner']
 
 /**
  * Weekdays are South Indian everyday home food. North Indian plates and light soups/salads/bowls
@@ -41,7 +51,7 @@ export function isLambMonth(month0: number): boolean {
 export const isFeast = (d: Dish) => d.tags.includes('feast')
 export const isEveryday = (d: Dish) => d.tags.includes('everyday')
 
-/** The one feast lunch of the month: the second Sunday. */
+/** The one regular feast lunch of the month: the second Sunday. */
 export function feastDayOf(year: number, month0: number): ISODate {
   const n = daysInMonth(year, month0)
   let sundays = 0
@@ -52,6 +62,13 @@ export function feastDayOf(year: number, month0: number): ISODate {
   return toISO(new Date(year, month0, n))
 }
 
+/** Estimated shopping cost of one dish for the whole family (pantry staples excluded). */
+export function dishCost(d: Dish, region: Region, familyFactor: number): number {
+  let c = 0
+  for (const i of d.ingredients) if (!PANTRY.has(i.name)) c += costOf(region, i.name, i.qty * familyFactor, i.unit)
+  return c
+}
+
 const cache = new Map<string, DayPlan[]>()
 
 export function monthKey(year: number, month0: number): string {
@@ -59,14 +76,15 @@ export function monthKey(year: number, month0: number): string {
 }
 
 export function generateMonth(year: number, month0: number, dishes: Dish[], opts: PlanOptions = DEFAULT_PLAN_OPTIONS): DayPlan[] {
-  const key = `${PLAN_VERSION}:${monthKey(year, month0)}:${dishes.length}:${opts.adventurous ? 'a' : 's'}`
+  const key = `${PLAN_VERSION}:${monthKey(year, month0)}:${dishes.length}:${opts.adventurous ? 'a' : 's'}:${opts.budget}:${opts.region}:${opts.familyFactor}:${opts.feastDays.join(',')}`
   const hit = cache.get(key)
   if (hit) return hit
 
   const rng = rngFor(`virundhu-${PLAN_VERSION}-${monthKey(year, month0)}`)
   const n = daysInMonth(year, month0)
   const dates: ISODate[] = Array.from({ length: n }, (_, i) => toISO(new Date(year, month0, i + 1)))
-  const feastDate = feastDayOf(year, month0)
+  const regularFeast = feastDayOf(year, month0)
+  const feastSet = new Set<ISODate>([regularFeast, ...opts.feastDays.filter((d) => d.startsWith(monthKey(year, month0)))])
 
   const byId = new Map(dishes.map((d) => [d.id, d]))
   const lastUsed = new Map<string, number>() // dish id -> day index
@@ -112,12 +130,12 @@ export function generateMonth(year: number, month0: number, dishes: Dish[], opts
   }
 
   // ---------- 2. Pick dishes ----------
+  const allowed = (d: Dish, weekend: boolean) => isEveryday(d) || (weekend && opts.adventurous)
+
   const pickDish = (dayIdx: number, slot: Slot, filter: (d: Dish) => boolean, weight: (d: Dish) => number, minGapDays: number): Dish | undefined => {
     const weekend = isWeekend(dates[dayIdx])
-    let pool = dishes.filter((d) => d.slots.includes(slot) && !isFeast(d) && filter(d))
+    let pool = dishes.filter((d) => d.slots.includes(slot) && !isFeast(d) && filter(d) && allowed(d, weekend))
     if (!weekend) pool = pool.filter((d) => !d.tags.includes('weekend')) // weekend specials stay on weekends
-    // familiar food: everyday dishes always; occasional ones only on weekends and only if the family wants them
-    pool = pool.filter((d) => isEveryday(d) || (weekend && opts.adventurous))
     const fresh = pool.filter((d) => {
       const last = lastUsed.get(d.id)
       return last == null || dayIdx - last >= minGapDays
@@ -143,16 +161,19 @@ export function generateMonth(year: number, month0: number, dishes: Dish[], opts
 
   const cuisineW = (dayIdx: number) => (d: Dish) => (isWeekend(dates[dayIdx]) ? WEEKEND_WEIGHT : WEEKDAY_WEIGHT)[d.cuisine] ?? 0
 
+  const pickFeast = (date: ISODate, lambOk: boolean): Dish | undefined => {
+    const feasts = dishes.filter((d) => isFeast(d) && d.slots.includes('lunch') && (lambOk ? d.protein === 'lamb' : d.protein !== 'lamb'))
+    const pool = feasts.length ? feasts : dishes.filter((d) => isFeast(d) && d.slots.includes('lunch'))
+    return pool.length ? rngFor(`feast-${date}`).pick(pool) : undefined
+  }
+
   for (let i = 0; i < n; i++) {
     const cw = cuisineW(i)
     for (const slot of MAIN_SLOTS) {
-      // The monthly feast: one Sunday lunch, lamb in lamb months, biryani-style otherwise.
-      if (slot === 'lunch' && dates[i] === feastDate) {
-        const lamb = isLambMonth(month0)
-        const feasts = dishes.filter((d) => isFeast(d) && d.slots.includes('lunch') && (lamb ? d.protein === 'lamb' : d.protein !== 'lamb'))
-        const pool = feasts.length ? feasts : dishes.filter((d) => isFeast(d) && d.slots.includes('lunch'))
-        if (pool.length) {
-          const dish = rng.pick(pool)
+      // Feast lunch: the regular monthly one (lamb in lamb months) and any day the family marked.
+      if (slot === 'lunch' && feastSet.has(dates[i])) {
+        const dish = pickFeast(dates[i], dates[i] === regularFeast && isLambMonth(month0))
+        if (dish) {
           plan[i].meals.lunch = dish.id
           mark(dish, i)
           continue
@@ -185,7 +206,7 @@ export function generateMonth(year: number, month0: number, dishes: Dish[], opts
 
   // Sanity: fill any empty slot with something valid so the UI never shows a hole.
   for (const day of plan) {
-    for (const slot of ['breakfast', 'snack', 'lunch', 'dinner'] as Slot[]) {
+    for (const slot of ALL_SLOTS) {
       if (!day.meals[slot] || !byId.has(day.meals[slot])) {
         const any = dishes.find((d) => d.slots.includes(slot) && !isFeast(d) && isEveryday(d)) ?? dishes.find((d) => d.slots.includes(slot))
         if (any) day.meals[slot] = any.id
@@ -193,8 +214,79 @@ export function generateMonth(year: number, month0: number, dishes: Dish[], opts
     }
   }
 
+  // ---------- 3. Fit each calendar week into the budget ----------
+  if (opts.budget > 0) fitBudget(plan, dishes, opts, feastSet)
+
   cache.set(key, plan)
   return plan
+}
+
+/**
+ * Deterministically replace the most expensive meals of each week with cheaper familiar dishes
+ * of the same kind until the week's estimated shopping cost is within the budget.
+ * Feast lunches are kept. The week target is pro-rated when a week is cut by the month edge.
+ */
+function fitBudget(plan: DayPlan[], dishes: Dish[], opts: PlanOptions, feastSet: Set<ISODate>) {
+  const byId = new Map(dishes.map((d) => [d.id, d]))
+  const costMemo = new Map<string, number>()
+  const cost = (d: Dish) => {
+    let c = costMemo.get(d.id)
+    if (c == null) {
+      c = dishCost(d, opts.region, opts.familyFactor)
+      costMemo.set(d.id, c)
+    }
+    return c
+  }
+
+  // group month days by calendar week (Monday start)
+  const weeks = new Map<ISODate, DayPlan[]>()
+  for (const day of plan) {
+    const ws = weekStart(day.date)
+    if (!weeks.has(ws)) weeks.set(ws, [])
+    weeks.get(ws)!.push(day)
+  }
+
+  for (const [, days] of weeks) {
+    const target = opts.budget * (days.length / 7)
+    const used = () => new Set(days.flatMap((d) => Object.values(d.meals)))
+    const total = () => days.reduce((s, d) => s + ALL_SLOTS.reduce((t, slot) => t + (byId.get(d.meals[slot]) ? cost(byId.get(d.meals[slot])!) : 0), 0), 0)
+
+    const tried = new Set<string>()
+    for (let iter = 0; iter < 40 && total() > target; iter++) {
+      // most expensive replaceable meal (mains first, then breakfast/snack)
+      let best: { day: DayPlan; slot: Slot; dish: Dish } | null = null
+      for (const day of days) {
+        for (const slot of ALL_SLOTS) {
+          const dish = byId.get(day.meals[slot])
+          if (!dish) continue
+          if (slot === 'lunch' && feastSet.has(day.date)) continue
+          const k = `${day.date}:${slot}`
+          if (tried.has(k)) continue
+          const mainBoost = slot === 'lunch' || slot === 'dinner' ? 1 : 0.6
+          if (!best || cost(dish) * mainBoost > cost(best.dish) * (best.slot === 'lunch' || best.slot === 'dinner' ? 1 : 0.6)) best = { day, slot, dish }
+        }
+      }
+      if (!best) break
+      const { day, slot, dish } = best
+      tried.add(`${day.date}:${slot}`)
+      const weekend = isWeekend(day.date)
+      const inUse = used()
+      const base = dishes.filter((d) => d.slots.includes(slot) && !isFeast(d) && isEveryday(d) && !inUse.has(d.id) && (weekend || !d.tags.includes('weekend')) && (weekend || d.cuisine === 'south' || slot === 'breakfast' || slot === 'snack') && cost(d) < cost(dish) * 0.85)
+      // same protein first, then egg, then veg: keeps the protein rhythm as long as the budget allows
+      const tiers: ((d: Dish) => boolean)[] = [(d) => d.protein === dish.protein, (d) => d.protein === 'egg', (d) => d.protein === 'veg']
+      let pick: Dish | undefined
+      for (const tier of tiers) {
+        const pool = base.filter(tier).sort((a, b) => cost(a) - cost(b) || a.name.localeCompare(b.name))
+        if (pool.length) {
+          // cheapest third, deterministic choice so both phones agree
+          const third = pool.slice(0, Math.max(1, Math.ceil(pool.length / 3)))
+          pick = rngFor(`budget-${day.date}-${slot}`).pick(third)
+          break
+        }
+      }
+      if (pick) day.meals[slot] = pick.id
+    }
+  }
 }
 
 /** Dishes that could replace `current` in this slot, most similar first. */
@@ -248,7 +340,7 @@ export function applyDislikes(date: ISODate, meals: Meals, dishes: Dish[], disli
   return { meals: out, replaced }
 }
 
-export function isFeastDay(date: ISODate): boolean {
+export function isRegularFeastDay(date: ISODate): boolean {
   const d = fromISO(date)
   return feastDayOf(d.getFullYear(), d.getMonth()) === date
 }
@@ -268,4 +360,14 @@ export function monthStats(plan: DayPlan[], byId: Map<string, Dish>) {
     }
   }
   return { proteins, cuisines, mains }
+}
+
+/** Estimated shopping cost for the given days (pantry excluded). */
+export function daysCost(days: DayPlan[], byId: Map<string, Dish>, region: Region, familyFactor: number): number {
+  let c = 0
+  for (const day of days) for (const slot of ALL_SLOTS) {
+    const d = byId.get(day.meals[slot])
+    if (d) c += dishCost(d, region, familyFactor)
+  }
+  return c
 }

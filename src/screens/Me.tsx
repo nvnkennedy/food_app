@@ -205,6 +205,19 @@ export function Me() {
             <span />
           </label>
         </div>
+        {settings.feastDays.length > 0 && (
+          <div className="setting" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 6 }}>
+            <div className="t">Your feast days ({settings.feastDays.length})</div>
+            <div className="chips">
+              {settings.feastDays.map((d) => (
+                <button key={d} className="chip" onClick={() => setSettings({ feastDays: settings.feastDays.filter((x) => x !== d) })} title="Remove">
+                  🎉 {d} ✕
+                </button>
+              ))}
+            </div>
+            <div className="s">Mark any day as a feast from the Today screen. The regular feast is the second Sunday of each month.</div>
+          </div>
+        )}
         {dislikedIds.length > 0 && (
           <div className="setting" style={{ flexDirection: 'column', alignItems: 'stretch', gap: 6 }}>
             <div className="t">Not for us ({dislikedIds.length})</div>
@@ -267,7 +280,7 @@ export function Me() {
         <div className="setting">
           <div className="grow">
             <div className="t">Weekly grocery budget</div>
-            <div className="s">The grocery list compares the estimated week against this.</div>
+            <div className="s">The plan is built to fit this: expensive meals are swapped for cheaper familiar ones before you see them. Feast weeks may go over.</div>
           </div>
           <div className="row" style={{ gap: 4 }}>
             <span className="muted">{cur.symbol}</span>
@@ -308,7 +321,8 @@ export function Me() {
         <ul className="bullets">
           <li>Only familiar everyday dishes are planned: idli, dosa, upma, pongal, sambar, rasam, kootu, poriyal, kuzhambu, curd rice, chicken and fish curries, egg curry. Less familiar dishes are marked "Occasional" and appear only if you pick them, or on weekends if you switch that on.</li>
           <li>Weekdays are South Indian home food. North Indian plates and light soups or salads can appear only on weekends, as extras.</li>
-          <li>One feast a month, on the second Sunday: biryani or a celebration plate, and lamb in every second month. The rest of the month stays light.</li>
+          <li>One feast a month, on the second Sunday: biryani or a celebration plate, and lamb in every second month. Add your own feast days (birthdays, festivals) from the Today screen.</li>
+          <li>The week is planned to fit your grocery budget: the most expensive meals are replaced with cheaper familiar ones, keeping the same protein where possible.</li>
           <li>Each week: chicken 3×, fish 2×, egg 3×, the rest dal and vegetables. Prawns every second week.</li>
           <li>Breakfast is tiffin: idli, dosa, poha, upma, ragi, oats, with eggs about twice a week. Snacks are South Indian and kid friendly.</li>
           <li>Iron-rich plates are favoured and every recipe says how to absorb more: lemon or tomato with dal and greens, dal with rice or roti for complete protein, soaked and fermented batters, no tea or coffee with meals.</li>

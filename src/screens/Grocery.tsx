@@ -134,7 +134,9 @@ export function Grocery() {
               <div className={over ? 'over' : ''} style={{ width: Math.min(100, Math.round((total / budget) * 100)) + '%' }} />
             </div>
             <div className={'xs ' + (over ? 'bad' : 'good')}>
-              {over ? `About ${fmtMoney(region, total - budget)} over budget. Biggest items: ${expensive.map((l) => `${l.name} ${fmtMoney(region, lineCost(l))}`).join(', ')}. Swap a meal and sort by "Cheapest" to bring it down.` : `${fmtMoney(region, budget - total)} under budget.`}
+              {over
+                ? `About ${fmtMoney(region, total - budget)} over: a feast day or your own swaps pushed this week up. Biggest items: ${expensive.map((l) => `${l.name} ${fmtMoney(region, lineCost(l))}`).join(', ')}.`
+                : `Planned to fit your budget, ${fmtMoney(region, budget - total)} to spare.`}
             </div>
           </>
         )}

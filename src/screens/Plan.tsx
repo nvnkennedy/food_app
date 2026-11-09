@@ -7,7 +7,7 @@ import { IconChevronLeft, IconChevronRight } from '../components/Icons'
 import type { Dish, Slot } from '../data/types'
 
 export function Plan({ openDay }: { openDay: (d: ISODate) => void }) {
-  const { dishes, byId, overrides, planOptions } = useFamily()
+  const { dishes, byId, overrides, planOptions, settings } = useFamily()
   const now = new Date()
   const [ym, setYm] = useState({ y: now.getFullYear(), m: now.getMonth() })
   const today = todayISO()
@@ -57,7 +57,7 @@ export function Plan({ openDay }: { openDay: (d: ISODate) => void }) {
           <span className="chip">South Indian {Math.round(((stats.cuisines.south ?? 0) / Math.max(1, stats.mains)) * 100)}%</span>
         </div>
         <div className="muted xs" style={{ marginTop: 10 }}>
-          🎉 Feast on {fmtDow(feast)} {fmtDayNum(feast)}{isLambMonth(ym.m) ? ' (lamb month)' : ''}. Same plan on every phone; swapped meals are marked and stay on this phone.
+          🎉 Feast on {fmtDow(feast)} {fmtDayNum(feast)}{isLambMonth(ym.m) ? ' (lamb month)' : ''}{settings.feastDays.filter((x) => x.startsWith(`${ym.y}-${String(ym.m + 1).padStart(2, '0')}`)).length ? ' plus your own feast days' : ''}. {planOptions.budget > 0 ? 'Planned to fit your weekly budget. ' : ''}Same plan on every phone when the setup matches; swapped meals stay on this phone.
         </div>
       </div>
 
@@ -67,7 +67,7 @@ export function Plan({ openDay }: { openDay: (d: ISODate) => void }) {
           const swapped = !!overrides[day.date]
           const dow = fmtDow(day.date)
           const showWeek = i === 0 || dow === 'Mon'
-          const isFeast = day.date === feast
+          const isFeast = day.date === feast || settings.feastDays.includes(day.date)
           return (
             <Fragment key={day.date}>
               {showWeek && (
