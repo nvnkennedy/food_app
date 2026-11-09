@@ -89,7 +89,7 @@ export interface SetupPayload {
 
 const Ctx = createContext<FamilyState | null>(null)
 
-const AVATAR_CLASSES = ['', 'a2', 'a3', 'a4']
+const AVATAR_CLASSES = ['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7', 'a8']
 
 /** One-time migration from the earlier shape (profiles without kind, separate child toggle, theme key). */
 function migrateProfiles(list: Profile[]): Profile[] {
@@ -131,10 +131,9 @@ export function FamilyProvider({ children }: { children: ReactNode }) {
   const profiles = useMemo(() => migrateProfiles(rawProfiles), [rawProfiles])
 
   const people = useMemo<Person[]>(() => {
-    let ai = 0
-    return profiles.map((profile) => {
+    return profiles.map((profile, i) => {
       const targets = targetsOf(profile)
-      const cls = profile.kind === 'child' ? 'kid' : AVATAR_CLASSES[ai++ % AVATAR_CLASSES.length]
+      const cls = AVATAR_CLASSES[i % AVATAR_CLASSES.length]
       return { profile, targets, factor: dayFactor(profile, targets), cls }
     })
   }, [profiles])

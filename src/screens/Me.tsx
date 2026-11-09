@@ -7,15 +7,13 @@ import { todayISO } from '../lib/dates'
 import { CURRENCY, type Region } from '../data/prices'
 
 export function Me() {
-  const { profiles, setProfiles, people, weights, logWeight, removeWeight, clearOverrides, overrides, settings, setSettings, setupLink, prefs, setPref, byId } = useFamily()
+  const { setProfiles, people, weights, logWeight, removeWeight, clearOverrides, overrides, settings, setSettings, setupLink, prefs, setPref, byId } = useFamily()
   const [copied, setCopied] = useState(false)
   const dislikedIds = Object.keys(prefs).filter((k) => prefs[k] === 'dislike')
-  const adults = profiles.filter((p) => p.kind === 'adult').length
-  const kids = profiles.filter((p) => p.kind === 'child').length
 
   const add = (kind: 'adult' | 'child', sex: Sex) => {
     const id = (kind === 'child' ? 'k' : 'p') + Date.now().toString(36)
-    const name = kind === 'child' ? 'Child' : sex === 'male' ? 'Me' : 'Partner'
+    const name = kind === 'child' ? 'Child' : 'Adult'
     setProfiles((p) => [...p, defaultProfile(id, name, sex, kind, kind === 'child' ? 6 : undefined)])
   }
   const update = (id: string, patch: Partial<Profile>) => setProfiles((p) => p.map((x) => (x.id === id ? { ...x, ...patch } : x)))
@@ -176,21 +174,15 @@ export function Me() {
       })}
 
       <div className="row" style={{ flexWrap: 'wrap' }}>
-        {adults < 2 && (
-          <>
-            <button className="btn sm grow" onClick={() => add('adult', 'male')}>
-              <IconPlus size={16} /> Add adult (male)
-            </button>
-            <button className="btn sm grow" onClick={() => add('adult', 'female')}>
-              <IconPlus size={16} /> Add adult (female)
-            </button>
-          </>
-        )}
-        {kids < 3 && (
-          <button className="btn sm secondary grow" onClick={() => add('child', 'male')}>
-            <IconPlus size={16} /> Add child
-          </button>
-        )}
+        <button className="btn sm grow" onClick={() => add('adult', 'male')}>
+          <IconPlus size={16} /> Add adult
+        </button>
+        <button className="btn sm secondary grow" onClick={() => add('child', 'male')}>
+          <IconPlus size={16} /> Add child
+        </button>
+      </div>
+      <div className="faint xs" style={{ marginTop: -6 }}>
+        {people.length} {people.length === 1 ? 'person' : 'people'} · the grocery list and every ingredient amount scale to everyone listed here.
       </div>
 
       <section className="card">

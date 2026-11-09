@@ -107,6 +107,7 @@ export function NutrientPanel({ date, meals }: { date: ISODate; meals: Record<Sl
               </button>
             </div>
           </div>
+          <div className={'ntable-wrap' + (people.length > 3 ? ' scroll' : '')}>
           <table className="ntable">
             <thead>
               <tr>
@@ -148,6 +149,7 @@ export function NutrientPanel({ date, meals }: { date: ISODate; meals: Record<Sl
               ))}
             </tbody>
           </table>
+          </div>
           {mode === 'day' && anyEaten && (
             <label className="row xs muted" style={{ gap: 8 }}>
               <input type="checkbox" checked={onlyEaten} onChange={(e) => setOnlyEaten(e.target.checked)} style={{ accentColor: 'var(--accent)' }} />
