@@ -1431,7 +1431,7 @@ export const LIGHT_NORTH_BF: Dish[] = [
   },
   {
     id: 'overnight-oats-fruit-chia',
-    name: 'Overnight oats with skyr, fruit & chia',
+    name: 'Overnight oats with Greek yogurt, fruit & chia',
     description: 'Rolled oats soaked overnight in the fridge with thick Icelandic-style yogurt, milk, chia seeds and mashed banana, eaten cold with berries and almonds on top. Creamy, slightly sweet and no cooking needed.',
     cuisine: 'north',
     slots: ['breakfast'],
@@ -1447,14 +1447,14 @@ export const LIGHT_NORTH_BF: Dish[] = [
     portion: [
       { item: 'overnight oats', qty: 350, unit: 'g' }
     ],
-    absorption: 'The overnight soak is doing the work: it breaks down the phytates in oats and chia so their magnesium, zinc and iron are far better absorbed. Berries add vitamin C for the iron and skyr adds zinc and calcium; have it without tea or coffee.',
+    absorption: 'The overnight soak is doing the work: it breaks down the phytates in oats and chia so their magnesium, zinc and iron are far better absorbed. Berries add vitamin C for the iron and Greek yogurt adds zinc and calcium; have it without tea or coffee.',
     time_min: 10,
     effort: 'easy',
     kidFriendly: true,
     tags: ['quick', 'batch-cook', 'high-fiber'],
     ingredients: [
       { name: 'rolled oats', qty: 45, unit: 'g', note: 'Aldi: Haferflocken kernig' },
-      { name: 'skyr', qty: 100, unit: 'g', note: 'or greek yogurt; Aldi: Skyr natur Milsani' },
+      { name: 'greek yogurt', qty: 100, unit: 'g', note: 'or greek yogurt; Aldi: Griechischer Joghurt 2% Milsani' },
       { name: 'low fat milk', qty: 80, unit: 'ml', note: 'Aldi: Fettarme Milch 1.5% Milsani' },
       { name: 'chia seeds', qty: 1, unit: 'tbsp', note: 'Aldi Chiasamen' },
       { name: 'banana', qty: 0.5, unit: 'pc', note: 'mashed' },
@@ -1464,18 +1464,18 @@ export const LIGHT_NORTH_BF: Dish[] = [
       { name: 'almonds', qty: 5, unit: 'pc', note: 'chopped' }
     ],
     steps: [
-      'Mix oats, chia seeds, skyr, milk, mashed banana and cinnamon in a jar.',
+      'Mix oats, chia seeds, Greek yogurt, milk, mashed banana and cinnamon in a jar.',
       'Stir well so the chia does not clump.',
       'Cover and refrigerate overnight.',
       'In the morning loosen with a splash of milk if thick.',
       'Top with berries and chopped almonds.',
       'Serve cold straight from the fridge.'
     ],
-    tip: 'Make three jars at once; the skyr lifts the protein so it keeps you full until lunch.'
+    tip: 'Make three jars at once; the Greek yogurt lifts the protein so it keeps you full until lunch.'
   },
   {
-    id: 'fruit-skyr-bowl-nuts',
-    name: 'Fruit & skyr (thick high-protein yogurt) bowl with nuts',
+    id: 'fruit-greek-yogurt-bowl-nuts',
+    name: 'Fruit & Greek yogurt (thick high-protein yogurt) bowl with nuts',
     description: 'A bowl of thick, tangy Icelandic-style strained yogurt topped with sliced banana, apple, walnuts, ground flaxseed and cinnamon. Cold, creamy and ready in five minutes.',
     cuisine: 'north',
     slots: ['breakfast'],
@@ -1489,17 +1489,17 @@ export const LIGHT_NORTH_BF: Dish[] = [
     zinc_mg: 1.7,
     magnesium_mg: 74,
     portion: [
-      { item: 'skyr', qty: 200, unit: 'g' },
+      { item: 'Greek yogurt', qty: 200, unit: 'g' },
       { item: 'fruit', qty: 150, unit: 'g' },
       { item: 'nuts & seeds', qty: 1, unit: 'tbsp' }
     ],
-    absorption: 'This bowl is about protein, calcium and zinc from the skyr rather than iron, which is low here. Grind the flax fresh so its magnesium and omega-3 are available, and swap in berries or orange for a vitamin C boost; add pumpkin seeds if you want more zinc.',
+    absorption: 'This bowl is about protein, calcium and zinc from the Greek yogurt rather than iron, which is low here. Grind the flax fresh so its magnesium and omega-3 are available, and swap in berries or orange for a vitamin C boost; add pumpkin seeds if you want more zinc.',
     time_min: 5,
     effort: 'easy',
     kidFriendly: true,
     tags: ['quick', 'high-protein', 'low-carb'],
     ingredients: [
-      { name: 'skyr', qty: 200, unit: 'g', note: 'plain; Aldi: Skyr natur Milsani' },
+      { name: 'greek yogurt', qty: 200, unit: 'g', note: 'plain; Aldi: Griechischer Joghurt 2% Milsani' },
       { name: 'banana', qty: 0.5, unit: 'pc' },
       { name: 'apple', qty: 0.5, unit: 'pc', note: 'or 80 g berries / orange' },
       { name: 'walnuts', qty: 10, unit: 'g', note: 'Aldi Walnüsse' },
@@ -1508,13 +1508,13 @@ export const LIGHT_NORTH_BF: Dish[] = [
       { name: 'honey', qty: 0.5, unit: 'tsp', note: 'optional' }
     ],
     steps: [
-      'Spoon the skyr into bowls.',
+      'Spoon the Greek yogurt into bowls.',
       'Slice the banana and dice the apple.',
-      'Arrange the fruit over the skyr.',
+      'Arrange the fruit over the Greek yogurt.',
       'Scatter walnuts and ground flax on top.',
       'Dust with cinnamon and a thread of honey for the kid.'
     ],
-    tip: 'A 200 g tub of skyr has more protein than three eggs; keep the honey for the kid only.'
+    tip: 'A 200 g tub of Greek yogurt has more protein than three eggs; keep the honey for the kid only.'
   },
   {
     id: 'egg-bhurji-roti',

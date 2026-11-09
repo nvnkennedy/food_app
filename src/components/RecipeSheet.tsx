@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import type { Dish, Slot, Unit } from '../data/types'
 import { germanName } from '../data/germanNames'
+import { costOf, fmtMoney } from '../data/prices'
 import { Sheet } from './Sheet'
 import { DishChips, dishEmoji } from './Chips'
 import { IconClock, IconSwap } from './Icons'
-import { useFamily, CHILD } from '../state'
-import { fmtNutrient, NUTRIENTS, scaled, SLOT_LABEL, CHILD_TARGETS } from '../lib/nutrition'
+import { useFamily } from '../state'
+import { fmtNutrient, NUTRIENTS, scaled, SLOT_LABEL } from '../lib/nutrition'
 import { describePortion, MEASURES } from '../lib/portion'
+import { isFeast } from '../lib/planner'
 
 function fmtIng(qty: number, unit: Unit): string {
   let q = qty
@@ -21,14 +23,11 @@ function fmtIng(qty: number, unit: Unit): string {
 }
 
 export function RecipeSheet({ dish, slot, onClose, onSwap }: { dish: Dish; slot: Slot; onClose: () => void; onSwap?: () => void }) {
-  const { people, childEnabled, familyFactor, portionFor } = useFamily()
+  const { people, familyFactor, portionFor, settings } = useFamily()
   const [perServing, setPerServing] = useState(false)
   const mult = perServing ? 1 : familyFactor
-
-  const eaters = [
-    ...people.map((p, i) => ({ key: p.profile.id, name: p.profile.name, cls: i === 1 ? 'a2' : '', f: portionFor(dish, slot, p), targets: p.targets })),
-    ...(childEnabled ? [{ key: 'kid', name: 'Little one', cls: 'kid', f: CHILD.factor, targets: CHILD_TARGETS }] : [])
-  ]
+  const region = settings.region
+  const cost = dish.ingredients.reduce((s, i) => s + costOf(region, i.name, i.qty * mult, i.unit), 0)
 
   return (
     <Sheet
@@ -52,6 +51,7 @@ export function RecipeSheet({ dish, slot, onClose, onSwap }: { dish: Dish; slot:
         </div>
       </div>
       <p className="desc">{dish.description}</p>
+      {isFeast(dish) && <div className="banner">🎉 This month's feast. Enjoy it, keep the portion honest, and the rest of the week stays light.</div>}
       <div className="row-between">
         <DishChips dish={dish} />
         <span className="row small muted" style={{ gap: 4, flex: 'none' }}>
@@ -91,28 +91,29 @@ export function RecipeSheet({ dish, slot, onClose, onSwap }: { dish: Dish; slot:
       <section className="card">
         <div className="card-title">Standard plate · one adult</div>
         <div className="plate-std">{describePortion(dish.portion, 1)}</div>
-        {eaters.length > 0 && (
+        {people.length > 0 && (
           <>
             <div className="card-title" style={{ marginTop: 14 }}>
               Your plates
             </div>
             <ul className="list">
-              {eaters.map((e) => {
-                const s = scaled(dish, e.f)
+              {people.map((p) => {
+                const f = portionFor(dish, slot, p)
+                const s = scaled(dish, f)
                 return (
-                  <li key={e.key} className="eater">
+                  <li key={p.profile.id} className="eater">
                     <div className="row">
-                      <span className={'avatar ' + e.cls}>{e.name.slice(0, 1).toUpperCase()}</span>
-                      <b>{e.name}</b>
-                      <span className="faint xs">· {e.f}× serving</span>
+                      <span className={'avatar ' + p.cls}>{p.profile.name.slice(0, 1).toUpperCase()}</span>
+                      <b>{p.profile.name}</b>
+                      <span className="faint xs">· {f}× serving</span>
                     </div>
-                    <div className="eater-plate">{describePortion(dish.portion, e.f)}</div>
+                    <div className="eater-plate">{describePortion(dish.portion, f)}</div>
                     <div className="eater-nutri">
                       {NUTRIENTS.map((n) => (
                         <span key={n.key}>
                           <b>{fmtNutrient(n.key, s[n.key])}</b>
                           {n.key === 'kcal' ? '' : n.unit} {n.short === 'kcal' ? '' : n.short}
-                          <em>{Math.round((s[n.key] / e.targets[n.key]) * 100)}%</em>
+                          <em>{Math.round((s[n.key] / p.targets[n.key]) * 100)}%</em>
                         </span>
                       ))}
                     </div>
@@ -146,19 +147,22 @@ export function RecipeSheet({ dish, slot, onClose, onSwap }: { dish: Dish; slot:
         </div>
         <ul className="list ingredients" style={{ marginTop: 8 }}>
           {dish.ingredients.map((ing, i) => {
-            const de = germanName(ing.name)
+            const de = region === 'DE' ? germanName(ing.name) : undefined
             return (
               <li key={i}>
                 <span className="ing-qty">{fmtIng(ing.qty * mult, ing.unit)}</span>
                 <span className="ing-name">
                   {ing.name}
-                  {ing.note && <em> · {ing.note}</em>}
+                  {ing.note && (region === 'DE' || !/aldi|rewe|lidl|edeka/i.test(ing.note)) && <em> · {ing.note}</em>}
                   {de && <div className="ing-de">{de}</div>}
                 </span>
               </li>
             )
           })}
         </ul>
+        <div className="faint xs" style={{ marginTop: 8 }}>
+          Estimated cost {perServing ? 'per serving' : 'for the family'}: <b>{fmtMoney(region, cost)}</b>
+        </div>
       </section>
 
       <section className="card">

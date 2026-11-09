@@ -5,10 +5,12 @@ import { Today } from './screens/Today'
 import { Plan } from './screens/Plan'
 import { Grocery } from './screens/Grocery'
 import { Me } from './screens/Me'
+import { Welcome } from './screens/Welcome'
 import { todayISO, type ISODate } from './lib/dates'
 
 function ThemeSync() {
-  const { theme } = useFamily()
+  const { settings } = useFamily()
+  const theme = settings.theme
   useEffect(() => {
     const root = document.documentElement
     const mq = window.matchMedia('(prefers-color-scheme: dark)')
@@ -16,7 +18,7 @@ function ThemeSync() {
       const dark = theme === 'dark' || (theme === 'system' && mq.matches)
       root.dataset.theme = dark ? 'dark' : 'light'
       const meta = document.querySelector('meta[name=theme-color]')
-      if (meta) meta.setAttribute('content', dark ? '#0f1115' : '#f6f5f1')
+      if (meta) meta.setAttribute('content', dark ? '#0f1311' : '#f7f8f5')
     }
     apply()
     mq.addEventListener('change', apply)
@@ -25,7 +27,8 @@ function ThemeSync() {
   return null
 }
 
-export default function App() {
+function Shell() {
+  const { settings, profiles } = useFamily()
   const [tab, setTab] = useState<Tab>('today')
   const [date, setDate] = useState<ISODate>(todayISO())
 
@@ -39,17 +42,33 @@ export default function App() {
     switchTab('today')
   }
 
+  if (!settings.onboarded && profiles.length === 0) {
+    return (
+      <main className="screen">
+        <Welcome />
+      </main>
+    )
+  }
+
+  return (
+    <>
+      <main className="screen" key={tab}>
+        {tab === 'today' && <Today date={date} setDate={setDate} />}
+        {tab === 'plan' && <Plan openDay={openDay} />}
+        {tab === 'grocery' && <Grocery />}
+        {tab === 'me' && <Me />}
+      </main>
+      <TabBar tab={tab} setTab={switchTab} />
+    </>
+  )
+}
+
+export default function App() {
   return (
     <FamilyProvider>
       <ThemeSync />
       <div className="app">
-        <main className="screen" key={tab}>
-          {tab === 'today' && <Today date={date} setDate={setDate} goToMe={() => switchTab('me')} />}
-          {tab === 'plan' && <Plan openDay={openDay} />}
-          {tab === 'grocery' && <Grocery />}
-          {tab === 'me' && <Me />}
-        </main>
-        <TabBar tab={tab} setTab={switchTab} />
+        <Shell />
       </div>
     </FamilyProvider>
   )

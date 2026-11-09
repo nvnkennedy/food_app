@@ -1,26 +1,22 @@
 import { useState } from 'react'
-import type { Dish, Slot } from '../data/types'
-import { useFamily, CHILD } from '../state'
-import { CHILD_TARGETS, fmtNutrient, NUTRIENTS, scaled, SLOT_ORDER, type NutrientKey } from '../lib/nutrition'
+import type { Slot } from '../data/types'
+import { useFamily } from '../state'
+import { fmtNutrient, NUTRIENTS, scaled, SLOT_ORDER, type NutrientKey } from '../lib/nutrition'
 import { Ring } from './Ring'
 
-/** Daily totals for every eater against their targets, with a person switcher. */
+/** Daily totals for every family member against their targets, with a person switcher. */
 export function NutrientPanel({ meals }: { meals: Record<Slot, string> }) {
-  const { byId, people, childEnabled, portionFor } = useFamily()
+  const { byId, people, portionFor } = useFamily()
   const [sel, setSel] = useState(0)
 
-  const eaters = [
-    ...people.map((p, i) => ({ key: p.profile.id, name: p.profile.name, cls: i === 1 ? 'a2' : '', targets: p.targets, factor: (d: Dish, s: Slot) => portionFor(d, s, p) })),
-    ...(childEnabled ? [{ key: 'kid', name: 'Little one', cls: 'kid', targets: CHILD_TARGETS, factor: () => CHILD.factor }] : [])
-  ]
-  if (eaters.length === 0) return null
-  const e = eaters[Math.min(sel, eaters.length - 1)]
+  if (people.length === 0) return null
+  const e = people[Math.min(sel, people.length - 1)]
 
   const totals: Record<NutrientKey, number> = { kcal: 0, protein_g: 0, fiber_g: 0, iron_mg: 0, zinc_mg: 0, magnesium_mg: 0 }
   for (const slot of SLOT_ORDER) {
     const d = byId.get(meals[slot])
     if (!d) continue
-    const s = scaled(d, e.factor(d, slot))
+    const s = scaled(d, portionFor(d, slot, e))
     for (const n of NUTRIENTS) totals[n.key] += s[n.key]
   }
 
@@ -30,11 +26,11 @@ export function NutrientPanel({ meals }: { meals: Record<Slot, string> }) {
         <div className="card-title" style={{ marginBottom: 0 }}>
           Today's nutrients
         </div>
-        {eaters.length > 1 && (
+        {people.length > 1 && (
           <div className="seg" style={{ padding: 3 }}>
-            {eaters.map((x, i) => (
-              <button key={x.key} className={i === sel ? 'active' : ''} onClick={() => setSel(i)}>
-                {x.name.split(' ')[0]}
+            {people.map((x, i) => (
+              <button key={x.profile.id} className={i === sel ? 'active' : ''} onClick={() => setSel(i)}>
+                {x.profile.name.split(' ')[0]}
               </button>
             ))}
           </div>
@@ -44,8 +40,9 @@ export function NutrientPanel({ meals }: { meals: Record<Slot, string> }) {
         <Ring value={totals.kcal} max={e.targets.kcal} label="Calories" />
         <div className="grow">
           <div className="row" style={{ gap: 6 }}>
-            <span className={'avatar ' + e.cls}>{e.name.slice(0, 1).toUpperCase()}</span>
-            <b>{e.name}</b>
+            <span className={'avatar ' + e.cls}>{e.profile.name.slice(0, 1).toUpperCase()}</span>
+            <b>{e.profile.name}</b>
+            {e.profile.kind === 'child' && <span className="faint xs">· age {e.profile.age}</span>}
           </div>
           <div className="small muted" style={{ marginTop: 2 }}>
             <b className={totals.kcal > e.targets.kcal * 1.05 ? 'bad' : ''}>{Math.round(totals.kcal)}</b> of {e.targets.kcal} kcal today

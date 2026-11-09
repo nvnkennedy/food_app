@@ -7,7 +7,8 @@ import { SwapSheet } from '../components/SwapSheet'
 import { NutrientPanel } from '../components/NutrientPanel'
 import { IconChevronLeft, IconChevronRight, IconToday } from '../components/Icons'
 import { SLOT_ORDER } from '../lib/nutrition'
-import { addDays, fmtDow, fmtDayNum, fromISO, todayISO, weekStart, type ISODate } from '../lib/dates'
+import { addDays, fmtDow, fmtDayNum, fromISO, isWeekend, todayISO, weekStart, type ISODate } from '../lib/dates'
+import { isFeastDay, isLambMonth } from '../lib/planner'
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const DOWS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -19,8 +20,8 @@ function heading(date: ISODate, today: ISODate): string {
   return DOWS[fromISO(date).getDay()]
 }
 
-export function Today({ date, setDate, goToMe }: { date: ISODate; setDate: (d: ISODate) => void; goToMe: () => void }) {
-  const { byId, people, overrides, setOverride, mealsOn } = useFamily()
+export function Today({ date, setDate }: { date: ISODate; setDate: (d: ISODate) => void }) {
+  const { byId, overrides, setOverride, mealsOn } = useFamily()
   const [open, setOpen] = useState<Slot | null>(null)
   const [swap, setSwap] = useState<Slot | null>(null)
 
@@ -33,7 +34,8 @@ export function Today({ date, setDate, goToMe }: { date: ISODate; setDate: (d: I
 
   const openDish: Dish | undefined = open ? byId.get(meals[open]) : undefined
   const swapDish: Dish | undefined = swap ? byId.get(meals[swap]) : undefined
-  const lambToday = (['lunch', 'dinner'] as Slot[]).some((s) => byId.get(meals[s])?.protein === 'lamb')
+  const feast = isFeastDay(date)
+  const weekend = isWeekend(date)
 
   return (
     <>
@@ -61,34 +63,27 @@ export function Today({ date, setDate, goToMe }: { date: ISODate; setDate: (d: I
 
       <div className="strip" role="tablist" aria-label="Days of the week">
         {week.map((wd) => (
-          <button key={wd} role="tab" aria-selected={wd === date} className={'strip-day' + (wd === date ? ' selected' : '') + (wd === today ? ' is-today' : '')} onClick={() => setDate(wd)}>
+          <button key={wd} role="tab" aria-selected={wd === date} className={'strip-day' + (wd === date ? ' selected' : '') + (wd === today ? ' is-today' : '') + (isFeastDay(wd) ? ' is-feast' : '')} onClick={() => setDate(wd)}>
             <span className="d">{fmtDow(wd).slice(0, 2)}</span>
             <span className="n">{fmtDayNum(wd)}</span>
-            {overrides[wd] && wd !== date && <span className="dot" />}
+            {(overrides[wd] || isFeastDay(wd)) && wd !== date && <span className="dot" />}
           </button>
         ))}
       </div>
 
-      {people.length === 0 ? (
-        <div className="card cta">
-          <span className="emoji" aria-hidden>
-            🎯
-          </span>
-          <div className="grow">
-            <div className="h3">Set your targets</div>
-            <div className="muted small">Add you and your partner to get daily calorie, protein, iron, zinc and magnesium targets and plates sized for each of you.</div>
-          </div>
-          <button className="btn sm" onClick={goToMe}>
-            Set up
-          </button>
-        </div>
-      ) : (
-        <NutrientPanel meals={meals} />
-      )}
+      <NutrientPanel meals={meals} />
 
-      {lambToday && (
-        <div className="banner">
-          <span aria-hidden>🐑</span> Lamb treat today. Lamb is the richest zinc source on the menu; the next one comes in two months.
+      {feast && (
+        <div className="banner feast-banner">
+          <span aria-hidden>🎉</span>
+          <span>
+            <b>Feast day.</b> The one proper celebration meal of the month{isLambMonth(d.getMonth()) ? ', and this month it is lamb' : ''}. Lunch is bigger, dinner stays light.
+          </span>
+        </div>
+      )}
+      {weekend && !feast && (
+        <div className="faint xs" style={{ padding: '0 4px' }}>
+          Weekend: North Indian plates and light soups or salads may appear as extras. Weekdays stay South Indian.
         </div>
       )}
 
@@ -97,7 +92,7 @@ export function Today({ date, setDate, goToMe }: { date: ISODate; setDate: (d: I
       ))}
 
       <div className="faint xs" style={{ textAlign: 'center', padding: '0 12px' }}>
-        Tap a meal for the recipe, nutrients and how to absorb more. No tea or coffee within an hour of iron-rich meals.
+        Tap a meal for the recipe, nutrients, cost and how to absorb more. No tea or coffee within an hour of iron-rich meals.
       </div>
 
       {open && openDish && (

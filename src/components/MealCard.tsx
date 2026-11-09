@@ -3,13 +3,15 @@ import { SLOT_LABEL } from '../lib/nutrition'
 import { describePortion } from '../lib/portion'
 import { dishEmoji, CUISINE_LABEL, PROTEIN_LABEL } from './Chips'
 import { IconClock, IconSwap } from './Icons'
-import { useFamily, CHILD } from '../state'
+import { useFamily } from '../state'
+import { isFeast } from '../lib/planner'
 
 export function MealCard({ slot, dish, swapped, onOpen, onSwap }: { slot: Slot; dish: Dish | undefined; swapped: boolean; onOpen: () => void; onSwap: () => void }) {
-  const { people, childEnabled, portionFor } = useFamily()
+  const { people, portionFor } = useFamily()
   if (!dish) return null
+  const feast = isFeast(dish)
   return (
-    <div className={`meal slot-${slot}`} onClick={onOpen} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onOpen()}>
+    <div className={`meal slot-${slot}${feast ? ' feast' : ''}`} onClick={onOpen} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onOpen()}>
       <div className="meal-ico" aria-hidden>
         {dishEmoji(dish, slot)}
       </div>
@@ -17,6 +19,7 @@ export function MealCard({ slot, dish, swapped, onOpen, onSwap }: { slot: Slot; 
         <div className="row-between">
           <div className="slot-tag">
             {SLOT_LABEL[slot]}
+            {feast && <span className="feast-tag">Feast</span>}
             {swapped && <span className="swapped-tag">swapped</span>}
           </div>
           <button
@@ -57,24 +60,21 @@ export function MealCard({ slot, dish, swapped, onOpen, onSwap }: { slot: Slot; 
           <span className={`chip chip-${dish.protein}`}>{PROTEIN_LABEL[dish.protein]}</span>
           <span className="chip">{CUISINE_LABEL[dish.cuisine]}</span>
           {dish.tags.includes('high-iron') && <span className="chip chip-iron">High iron</span>}
+          {dish.tags.includes('high-protein') && <span className="chip chip-protein">High protein</span>}
         </div>
-        {(people.length > 0 || childEnabled) && (
+        {people.length > 0 && (
           <ul className="plates">
-            {people.map((p, i) => {
+            {people.map((p) => {
               const f = portionFor(dish, slot, p)
               return (
                 <li key={p.profile.id}>
-                  <span className={'avatar' + (i === 1 ? ' a2' : '')}>{p.profile.name.slice(0, 1).toUpperCase()}</span>
-                  <span>{describePortion(dish.portion, f)}</span>
+                  <span className={'avatar ' + p.cls}>{p.profile.name.slice(0, 1).toUpperCase()}</span>
+                  <span>
+                    <b>{p.profile.name}</b>: {describePortion(dish.portion, f)}
+                  </span>
                 </li>
               )
             })}
-            {childEnabled && (
-              <li>
-                <span className="avatar kid">K</span>
-                <span>{describePortion(dish.portion, CHILD.factor)}</span>
-              </li>
-            )}
           </ul>
         )}
       </div>

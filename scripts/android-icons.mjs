@@ -21,7 +21,7 @@ for (const [d, f] of Object.entries(dens)) {
     .png()
     .toFile(`${dir}/ic_launcher_foreground.png`)
 }
-writeFileSync(`${base}/values/ic_launcher_background.xml`, `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#C2410C</color>\n</resources>\n`)
+writeFileSync(`${base}/values/ic_launcher_background.xml`, `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <color name="ic_launcher_background">#15803D</color>\n</resources>\n`)
 
 // splash: warm background with the icon centred
 for (const [d, f] of Object.entries(dens)) {
@@ -32,7 +32,7 @@ for (const [d, f] of Object.entries(dens)) {
     const h = Math.round((orient === 'port' ? 800 : 480) * f)
     const art = Math.round(Math.min(w, h) * 0.3)
     const fg = await sharp(svg).resize(art, art).png().toBuffer()
-    await sharp({ create: { width: w, height: h, channels: 4, background: '#fff7ed' } })
+    await sharp({ create: { width: w, height: h, channels: 4, background: '#f7f8f5' } })
       .composite([{ input: fg, gravity: 'centre' }])
       .png()
       .toFile(`${dir}/splash.png`)
@@ -40,5 +40,5 @@ for (const [d, f] of Object.entries(dens)) {
 }
 const art = 200
 const fg = await sharp(svg).resize(art, art).png().toBuffer()
-await sharp({ create: { width: 480, height: 800, channels: 4, background: '#fff7ed' } }).composite([{ input: fg, gravity: 'centre' }]).png().toFile(`${base}/drawable/splash.png`)
+await sharp({ create: { width: 480, height: 800, channels: 4, background: '#f7f8f5' } }).composite([{ input: fg, gravity: 'centre' }]).png().toFile(`${base}/drawable/splash.png`)
 console.log('android icons + splash written')

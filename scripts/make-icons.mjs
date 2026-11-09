@@ -1,14 +1,38 @@
 // Generates PWA / Android icons from an inline SVG. Run: node scripts/make-icons.mjs
+// Logo: a banana-leaf plate with rice, dal and chutney in fresh food colours.
 import sharp from 'sharp'
 import { mkdirSync, writeFileSync } from 'node:fs'
 
-const svg = (size, maskable) => `
+export const svg = (size, maskable) => `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="${size}" height="${size}">
-  <rect width="512" height="512" rx="${maskable ? 0 : 110}" fill="#c2410c"/>
-  <circle cx="256" cy="290" r="150" fill="#fff7ed"/>
-  <circle cx="256" cy="290" r="110" fill="#fdba74"/>
-  <ellipse cx="256" cy="275" rx="70" ry="42" fill="#fff7ed"/>
-  <path d="M200 130 q 20 -40 0 -80 M256 130 q 20 -40 0 -80 M312 130 q 20 -40 0 -80" stroke="#fff7ed" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.9"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22c55e"/>
+      <stop offset="1" stop-color="#15803d"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a3e635"/>
+      <stop offset="1" stop-color="#65a30d"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="${maskable ? 0 : 112}" fill="url(#bg)"/>
+  <!-- banana leaf -->
+  <path d="M86 300 C86 200 180 150 300 150 C400 150 440 210 440 270 C440 340 360 380 250 380 C150 380 86 360 86 300 Z" fill="url(#leaf)"/>
+  <path d="M110 300 C130 250 220 190 420 240" stroke="#4d7c0f" stroke-width="6" fill="none" opacity="0.55" stroke-linecap="round"/>
+  <!-- rice mound -->
+  <ellipse cx="236" cy="290" rx="78" ry="46" fill="#fffdf5"/>
+  <ellipse cx="236" cy="282" rx="60" ry="34" fill="#ffffff"/>
+  <!-- dal (turmeric) -->
+  <circle cx="352" cy="250" r="34" fill="#f59e0b"/>
+  <circle cx="352" cy="250" r="22" fill="#fbbf24"/>
+  <!-- chutney (tomato) -->
+  <circle cx="352" cy="330" r="26" fill="#ef4444"/>
+  <circle cx="352" cy="330" r="15" fill="#f87171"/>
+  <!-- poriyal (green) -->
+  <circle cx="140" cy="330" r="26" fill="#166534"/>
+  <circle cx="140" cy="330" r="15" fill="#22c55e"/>
+  <!-- steam -->
+  <path d="M200 120 q 14 -26 0 -52 M236 120 q 14 -26 0 -52 M272 120 q 14 -26 0 -52" stroke="#ffffff" stroke-width="14" fill="none" stroke-linecap="round" opacity="0.85"/>
 </svg>`
 
 mkdirSync('public/icons', { recursive: true })

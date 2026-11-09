@@ -314,7 +314,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 50,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['weekend', 'comfort', 'one-pot', 'high-protein'],
+    tags: ['weekend', 'comfort', 'one-pot', 'high-protein', 'feast'],
     ingredients: [
       { name: 'chicken thigh', qty: 140, unit: 'g', note: 'skinless, bone-in; Aldi: Hähnchen-Oberkeule ohne Knochen' },
       { name: 'appam flour', qty: 60, unit: 'g', note: '2 appams; or ready appam batter' },
@@ -476,7 +476,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 60,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['weekend', 'one-pot', 'leftover-friendly', 'high-protein'],
+    tags: ['weekend', 'one-pot', 'leftover-friendly', 'high-protein', 'feast'],
     ingredients: [
       { name: 'chicken thigh', qty: 150, unit: 'g', note: 'skinless, bone-in; Aldi: Hähnchen-Oberkeule ohne Knochen' },
       { name: 'brown rice', qty: 65, unit: 'g', note: 'brown basmati, soaked 30 min' },
@@ -1260,7 +1260,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 70,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['weekend', 'leftover-friendly', 'high-protein', 'high-zinc'],
+    tags: ['weekend', 'leftover-friendly', 'high-protein', 'high-zinc', 'feast'],
     ingredients: [
       { name: 'lamb', qty: 140, unit: 'g', note: 'lean, bone-in, trimmed of fat; Lammfleisch: Turkish/Indian butcher; Aldi Lammkeule seasonally' },
       { name: 'sona masoori rice', qty: 60, unit: 'g' },
@@ -1319,7 +1319,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 65,
     effort: 'medium',
     kidFriendly: false,
-    tags: ['weekend', 'high-protein', 'high-iron', 'high-zinc'],
+    tags: ['weekend', 'high-protein', 'high-iron', 'high-zinc', 'feast'],
     ingredients: [
       { name: 'lamb', qty: 150, unit: 'g', note: 'lean boneless, cubed; Lammfleisch: Turkish/Indian butcher; Aldi Lammkeule seasonally' },
       { name: 'atta', qty: 60, unit: 'g', note: '2 chapatis' },
@@ -2158,7 +2158,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 50,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['comfort', 'weekend', 'oven', 'high-protein'],
+    tags: ['comfort', 'weekend', 'oven', 'high-protein', 'feast'],
     ingredients: [
       { name: 'chicken breast', qty: 150, unit: 'g', note: 'or boneless thigh, cubed; Aldi: Hähnchenbrustfilet (Meine Metzgerei)' },
       { name: 'atta', qty: 60, unit: 'g', note: '2 rotis' },
@@ -2325,7 +2325,7 @@ export const NONVEG_AND_NORTH: Dish[] = [
     time_min: 50,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['oven', 'low-carb', 'weekend', 'high-protein', 'high-zinc'],
+    tags: ['oven', 'low-carb', 'weekend', 'high-protein', 'high-zinc', 'feast'],
     ingredients: [
       { name: 'chicken drumstick', qty: 3, unit: 'pc', note: 'skin removed, slashed; Aldi: Hähnchen-Unterkeule' },
       { name: 'atta', qty: 30, unit: 'g', note: '1 roti' },

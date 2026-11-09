@@ -1,6 +1,6 @@
 import type { Dish, Protein, Slot } from '../data/types'
 import { rngFor } from './rng'
-import { daysInMonth, isWeekend, toISO, type ISODate } from './dates'
+import { daysInMonth, isWeekend, toISO, fromISO, type ISODate } from './dates'
 
 export type Meals = Record<Slot, string> // dish id per slot
 export interface DayPlan {
@@ -8,11 +8,15 @@ export interface DayPlan {
   meals: Meals
 }
 
-const PLAN_VERSION = 'v2'
+const PLAN_VERSION = 'v3'
 const MAIN_SLOTS: ('lunch' | 'dinner')[] = ['lunch', 'dinner']
 
-/** How often each cuisine appears: South Indian leads, North Indian and light plates add variety. */
-const CUISINE_WEIGHT: Record<Dish['cuisine'], number> = { south: 1.0, north: 0.45, light: 0.4 }
+/**
+ * Weekdays are South Indian home food. North Indian plates and light soups/salads/bowls
+ * are weekend extras only.
+ */
+const WEEKDAY_WEIGHT: Record<Dish['cuisine'], number> = { south: 1.0, north: 0, light: 0 }
+const WEEKEND_WEIGHT: Record<Dish['cuisine'], number> = { south: 1.0, north: 0.45, light: 0.5 }
 
 /** Weekly non-veg rhythm for 14 main slots (lunch + dinner x 7). */
 const WEEK_PROTEINS: Protein[] = [
@@ -23,9 +27,22 @@ const WEEK_PROTEINS: Protein[] = [
 ]
 /** Every second week one veg slot becomes prawn. */
 const PRAWN_EVERY_N_WEEKS = 2
-/** Lamb once every two months: in months with an even index (Jan, Mar, May, ...). */
+/** Lamb once every two months: in months with an even index (Jan, Mar, May, ...). The lamb meal is that month's feast. */
 export function isLambMonth(month0: number): boolean {
   return month0 % 2 === 0
+}
+
+export const isFeast = (d: Dish) => d.tags.includes('feast')
+
+/** The one feast lunch of the month: the second Sunday. */
+export function feastDayOf(year: number, month0: number): ISODate {
+  const n = daysInMonth(year, month0)
+  let sundays = 0
+  for (let i = 0; i < n; i++) {
+    const d = new Date(year, month0, i + 1)
+    if (d.getDay() === 0 && ++sundays === 2) return toISO(d)
+  }
+  return toISO(new Date(year, month0, n))
 }
 
 const cache = new Map<string, DayPlan[]>()
@@ -42,6 +59,7 @@ export function generateMonth(year: number, month0: number, dishes: Dish[]): Day
   const rng = rngFor(`virundhu-${PLAN_VERSION}-${monthKey(year, month0)}`)
   const n = daysInMonth(year, month0)
   const dates: ISODate[] = Array.from({ length: n }, (_, i) => toISO(new Date(year, month0, i + 1)))
+  const feastDate = feastDayOf(year, month0)
 
   const byId = new Map(dishes.map((d) => [d.id, d]))
   const lastUsed = new Map<string, number>() // dish id -> day index
@@ -86,16 +104,10 @@ export function generateMonth(year: number, month0: number, dishes: Dish[]): Day
     }
   }
 
-  // Lamb: first weekend lunch after the first week of a lamb month.
-  if (isLambMonth(month0) && dishes.some((d) => d.protein === 'lamb')) {
-    const idx = dates.findIndex((d, i) => i >= 7 && isWeekend(d))
-    if (idx >= 0) specs[idx].lunch = 'lamb'
-  }
-
   // ---------- 2. Pick dishes ----------
   const pickDish = (dayIdx: number, slot: Slot, filter: (d: Dish) => boolean, weight: (d: Dish) => number, minGapDays: number): Dish | undefined => {
     const weekend = isWeekend(dates[dayIdx])
-    let pool = dishes.filter((d) => d.slots.includes(slot) && filter(d))
+    let pool = dishes.filter((d) => d.slots.includes(slot) && !isFeast(d) && filter(d))
     if (!weekend) pool = pool.filter((d) => !d.tags.includes('weekend')) // weekend specials stay on weekends
     const fresh = pool.filter((d) => {
       const last = lastUsed.get(d.id)
@@ -119,29 +131,42 @@ export function generateMonth(year: number, month0: number, dishes: Dish[]): Day
     usedCount.set(dish.id, (usedCount.get(dish.id) ?? 0) + 1)
   }
 
-  const cuisineW = (d: Dish) => CUISINE_WEIGHT[d.cuisine] ?? 0.3
+  const cuisineW = (dayIdx: number) => (d: Dish) => (isWeekend(dates[dayIdx]) ? WEEKEND_WEIGHT : WEEKDAY_WEIGHT)[d.cuisine] ?? 0
 
   for (let i = 0; i < n; i++) {
+    const cw = cuisineW(i)
     for (const slot of MAIN_SLOTS) {
+      // The monthly feast: one Sunday lunch, lamb in lamb months, biryani-style otherwise.
+      if (slot === 'lunch' && dates[i] === feastDate) {
+        const lamb = isLambMonth(month0)
+        const feasts = dishes.filter((d) => isFeast(d) && d.slots.includes('lunch') && (lamb ? d.protein === 'lamb' : d.protein !== 'lamb'))
+        const pool = feasts.length ? feasts : dishes.filter((d) => isFeast(d) && d.slots.includes('lunch'))
+        if (pool.length) {
+          const dish = rng.pick(pool)
+          plan[i].meals.lunch = dish.id
+          mark(dish, i)
+          continue
+        }
+      }
       const want = specs[i][slot]
       const dish =
-        pickDish(i, slot, (d) => d.protein === want, cuisineW, 10) ??
-        pickDish(i, slot, (d) => d.protein === 'veg' || d.protein === 'egg', cuisineW, 10) ??
-        pickDish(i, slot, () => true, cuisineW, 3)
+        pickDish(i, slot, (d) => d.protein === want, cw, 10) ??
+        pickDish(i, slot, (d) => d.protein === 'veg' || d.protein === 'egg', cw, 10) ??
+        pickDish(i, slot, (d) => d.cuisine === 'south', () => 1, 3)
       if (dish) {
         plan[i].meals[slot] = dish.id
         mark(dish, i)
       }
     }
-    // Breakfast: about 2 egg breakfasts a week, never on a day that already has egg mains
+    // Breakfast: South Indian tiffin on weekdays, about 2 egg breakfasts a week, never on a day that already has egg mains
     const eggDay = rng.next() < 2 / 7 && specs[i].lunch !== 'egg' && specs[i].dinner !== 'egg'
-    const bf = pickDish(i, 'breakfast', (d) => (eggDay ? d.protein === 'egg' : d.protein !== 'egg'), cuisineW, 6) ?? pickDish(i, 'breakfast', () => true, cuisineW, 2)
+    const bf = pickDish(i, 'breakfast', (d) => (eggDay ? d.protein === 'egg' : d.protein !== 'egg'), (d) => Math.max(cw(d), d.protein === 'egg' ? 0.5 : 0), 6) ?? pickDish(i, 'breakfast', () => true, () => 1, 2)
     if (bf) {
       plan[i].meals.breakfast = bf.id
       mark(bf, i)
     }
     // Snack: South Indian snacks preferred, kid friendly
-    const sn = pickDish(i, 'snack', () => true, (d) => (d.cuisine === 'south' ? 1 : 0.6) * (d.kidFriendly ? 1 : 0.5), 3) ?? pickDish(i, 'snack', () => true, () => 1, 0)
+    const sn = pickDish(i, 'snack', () => true, (d) => (d.cuisine === 'south' ? 1 : 0.4) * (d.kidFriendly ? 1 : 0.5), 3) ?? pickDish(i, 'snack', () => true, () => 1, 0)
     if (sn) {
       plan[i].meals.snack = sn.id
       mark(sn, i)
@@ -152,7 +177,7 @@ export function generateMonth(year: number, month0: number, dishes: Dish[]): Day
   for (const day of plan) {
     for (const slot of ['breakfast', 'snack', 'lunch', 'dinner'] as Slot[]) {
       if (!day.meals[slot] || !byId.has(day.meals[slot])) {
-        const any = dishes.find((d) => d.slots.includes(slot))
+        const any = dishes.find((d) => d.slots.includes(slot) && !isFeast(d))
         if (any) day.meals[slot] = any.id
       }
     }
@@ -171,6 +196,7 @@ export function alternativesFor(current: Dish | undefined, slot: Slot, dishes: D
       if (d.protein === current.protein) s += 2
       if (d.cuisine === current.cuisine) s += 1
     }
+    if (d.cuisine === 'south') s += 0.5
     return s
   }
   return pool.sort((a, b) => score(b) - score(a) || a.name.localeCompare(b.name))
@@ -187,6 +213,11 @@ export function mealsFor(date: ISODate, dishes: Dish[], overrides: Overrides): M
   const ov = overrides[date]
   if (ov) for (const k of Object.keys(ov) as Slot[]) if (ov[k]) base[k] = ov[k] as string
   return base
+}
+
+export function isFeastDay(date: ISODate): boolean {
+  const d = fromISO(date)
+  return feastDayOf(d.getFullYear(), d.getMonth()) === date
 }
 
 /** Summary counts for the month overview. */

@@ -1,6 +1,6 @@
 import { Fragment, useMemo, useState } from 'react'
 import { useFamily } from '../state'
-import { generateMonth, monthStats } from '../lib/planner'
+import { generateMonth, monthStats, feastDayOf, isLambMonth } from '../lib/planner'
 import { fmtDow, fmtDayNum, fmtMonth, isWeekend, todayISO, type ISODate } from '../lib/dates'
 import { PROTEIN_LABEL } from '../components/Chips'
 import { IconChevronLeft, IconChevronRight } from '../components/Icons'
@@ -14,6 +14,7 @@ export function Plan({ openDay }: { openDay: (d: ISODate) => void }) {
 
   const plan = useMemo(() => generateMonth(ym.y, ym.m, dishes), [ym, dishes])
   const stats = useMemo(() => monthStats(plan, byId), [plan, byId])
+  const feast = feastDayOf(ym.y, ym.m)
 
   const shift = (n: number) => {
     const d = new Date(ym.y, ym.m + n, 1)
@@ -53,9 +54,10 @@ export function Plan({ openDay }: { openDay: (d: ISODate) => void }) {
                 {PROTEIN_LABEL[p]} ×{stats.proteins[p]}
               </span>
             ))}
+          <span className="chip">South Indian {Math.round(((stats.cuisines.south ?? 0) / Math.max(1, stats.mains)) * 100)}%</span>
         </div>
         <div className="muted xs" style={{ marginTop: 10 }}>
-          The same plan appears on every phone. Meals you swap are marked and stay on this phone.
+          🎉 Feast on {fmtDow(feast)} {fmtDayNum(feast)}{isLambMonth(ym.m) ? ' (lamb month)' : ''}. Same plan on every phone; swapped meals are marked and stay on this phone.
         </div>
       </div>
 
@@ -65,10 +67,15 @@ export function Plan({ openDay }: { openDay: (d: ISODate) => void }) {
           const swapped = !!overrides[day.date]
           const dow = fmtDow(day.date)
           const showWeek = i === 0 || dow === 'Mon'
+          const isFeast = day.date === feast
           return (
             <Fragment key={day.date}>
-              {showWeek && <li className="week-label">Week of {fmtDayNum(day.date)} {fmtMonth(ym.y, ym.m).split(' ')[0].slice(0, 3)}</li>}
-              <li className={'day' + (isToday ? ' today' : '') + (isWeekend(day.date) ? ' weekend' : '')}>
+              {showWeek && (
+                <li className="week-label">
+                  Week of {fmtDayNum(day.date)} {fmtMonth(ym.y, ym.m).split(' ')[0].slice(0, 3)}
+                </li>
+              )}
+              <li className={'day' + (isToday ? ' today' : '') + (isWeekend(day.date) ? ' weekend' : '') + (isFeast ? ' feast' : '')}>
                 <button className="day-btn" onClick={() => openDay(day.date)}>
                   <div className="day-badge">
                     <span className="n">{fmtDayNum(day.date)}</span>
@@ -88,7 +95,8 @@ export function Plan({ openDay }: { openDay: (d: ISODate) => void }) {
                       <span>{name(day.meals.dinner, day.date, 'dinner')}</span>
                     </div>
                   </div>
-                  {swapped && <span className="swapped-tag">swapped</span>}
+                  {isFeast && <span className="feast-tag corner">Feast</span>}
+                  {swapped && !isFeast && <span className="swapped-tag">swapped</span>}
                 </button>
               </li>
             </Fragment>

@@ -1730,7 +1730,7 @@ export const SOUTH_VEG: Dish[] = [
     time_min: 55,
     effort: 'medium',
     kidFriendly: true,
-    tags: ['weekend', 'one-pot', 'comfort', 'leftover-friendly', 'high-fiber'],
+    tags: ['weekend', 'one-pot', 'comfort', 'leftover-friendly', 'high-fiber', 'feast'],
     ingredients: [
       { name: 'brown rice', qty: 65, unit: 'g', note: 'dry; or brown basmati' },
       { name: 'onion', qty: 0.75, unit: 'pc' },
